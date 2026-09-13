@@ -1,3 +1,8 @@
+import sys
+import os
+# Thêm thư mục src vào sys.path để fix lỗi import
+sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
