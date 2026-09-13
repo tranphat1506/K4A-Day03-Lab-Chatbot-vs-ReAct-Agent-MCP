@@ -34,7 +34,8 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["region_code", "content"]
-        },
+        }
+    },
     {
         "name": "get_near_stations",
         "description": "Tìm các trạm xe buýt lân cận trong bán kính r mét từ tọa độ cho trước.",
@@ -59,7 +60,8 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["lat", "lng", "radius", "region_code"]
-        },
+        }
+    },
     {
         "name": "get_directions",
         "description": "Tìm lộ trình xe buýt tối ưu từ điểm A đến điểm B. Trả về nhiều gợi ý lộ trình, bao gồm thời gian đi, số trạm đi qua, và các tuyến xe.",
@@ -73,7 +75,8 @@ TOOLS_SCHEMA = [
                 "region_code": {"type": "string", "description": "Mã khu vực (ví dụ: 'hn')"}
             },
             "required": ["start_lat", "start_lng", "end_lat", "end_lng", "region_code"]
-        },
+        }
+    },
     {
         "name": "get_station_detail",
         "description": "Lấy thông tin chi tiết của một trạm xe buýt và các tuyến xe đi qua trạm đó.",
@@ -90,7 +93,8 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["station_id", "region_code"]
-        },
+        }
+    },
     {
         "name": "get_eta",
         "description": "Lấy thời gian dự kiến (ETA) của các xe buýt sắp tới một trạm xe cụ thể.",
