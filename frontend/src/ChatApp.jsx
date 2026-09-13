@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import JitTrackerCard from './components/JitTrackerCard';
 import { useState, useRef, useEffect } from 'react';
 import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin, FiChevronDown } from 'react-icons/fi';
 
