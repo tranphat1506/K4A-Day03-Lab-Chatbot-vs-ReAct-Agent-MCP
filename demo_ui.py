@@ -1,6 +1,11 @@
 import streamlit as st
 import json
 import os
+import sys
+
+# Thêm thư mục src vào sys.path để fix lỗi import
+sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
+
 from src.providers import get_llm_provider
 from src.mcp_server import MCPVinBusServer
 from src.app import run_react_agent
