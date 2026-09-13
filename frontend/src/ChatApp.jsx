@@ -77,16 +77,21 @@ function App() {
       let shouldRequestLocation = false;
       let logs = [];
 
+      let buffer = "";
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
         
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
+        buffer += decoder.decode(value, { stream: true });
         
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.replace('data: ', '').trim();
+        // Process complete events separated by double newline
+        let boundary = buffer.indexOf('\n\n');
+        while (boundary !== -1) {
+          const eventStr = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          
+          if (eventStr.startsWith('data: ')) {
+            const dataStr = eventStr.replace('data: ', '').trim();
             if (dataStr) {
               try {
                 const logData = JSON.parse(dataStr);
@@ -118,6 +123,7 @@ function App() {
               }
             }
           }
+          boundary = buffer.indexOf('\n\n');
         }
       }
     } catch (error) {
