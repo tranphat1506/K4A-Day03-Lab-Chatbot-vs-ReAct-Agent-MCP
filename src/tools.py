@@ -355,6 +355,12 @@ def execute_get_directions(start_lat: float, start_lng: float, end_lat: float, e
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
+def execute_propose_trip_plan(**kwargs) -> str:
+    return json.dumps({
+        "status": "SUCCESS",
+        "message": f"Đã đề xuất kế hoạch cho tuyến {kwargs.get('route_no')} tại trạm {kwargs.get('boarding_station_id')}."
+    }, ensure_ascii=False)
+
 # Router gọi tool thực tế
 TOOL_ROUTER = {
     "geocoding_search": execute_geocoding_search,
@@ -377,8 +383,4 @@ def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
             return json.dumps({"status": "EXECUTION_ERROR", "error": str(e)}, ensure_ascii=False)
     return json.dumps({"status": "UNKNOWN_TOOL", "error": f"Tool '{tool_name}' không tồn tại!"}, ensure_ascii=False)
 
-def execute_propose_trip_plan(**kwargs) -> str:
-    return json.dumps({
-        "status": "SUCCESS",
-        "message": f"Đã đề xuất kế hoạch cho tuyến {kwargs.get('route_no')} tại trạm {kwargs.get('boarding_station_id')}."
-    }, ensure_ascii=False)
+
