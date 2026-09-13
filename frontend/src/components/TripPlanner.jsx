@@ -16,8 +16,13 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
         id: Date.now().toString(),
         regionCode,
         boardingStationId,
+        stationName: stationName || `Trạm ${boardingStationId}`,
+        stationLat,
+        stationLng,
         routeNo,
         walkTimeMins: walkTimeMins || 5,
+        startLat,
+        startLng,
         status: 'active'
       };
       
@@ -54,7 +59,7 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
         Kế hoạch: Đón xe {routeNo}
       </h3>
       <ul className="text-sm text-gray-600 mb-4 space-y-1">
-        <li>📍 Trạm đón: <strong>{boardingStationId}</strong></li>
+        <li>📍 Trạm đón: <strong>{stationName || boardingStationId}</strong></li>
         <li>🚶 Đi bộ ra bến: <strong>{walkTimeMins} phút</strong></li>
         <li>🔔 Hệ thống sẽ báo động trước khi xe đến.</li>
       </ul>
