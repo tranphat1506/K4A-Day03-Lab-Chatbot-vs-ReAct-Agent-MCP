@@ -138,7 +138,24 @@ def execute_get_near_stations(lat: float, lng: float, radius: int, region_code: 
 def execute_get_station_detail(station_id: int, region_code: str) -> str:
     """Thực thi lấy chi tiết trạm xe buýt"""
     try:
-        result = vinbus_client.get_station_detail(station_id, region_code)
+        raw_result = vinbus_client.get_station_detail(station_id, region_code)
+        
+        # Tối ưu hóa Response (Bỏ rác HTML trong routeAlerts)
+        filtered_routes = []
+        if "allRouteThroughStation" in raw_result:
+            for route in raw_result["allRouteThroughStation"]:
+                filtered_routes.append({
+                    "routeNo": route.get("routeNo"),
+                    "routeName": route.get("routeName"),
+                    "operationTime": route.get("operationTime"),
+                    "headway": route.get("headway"),
+                    "normalTicket": route.get("normalTicket")
+                })
+        
+        result = {
+            "stationInfo": raw_result.get("stationInfo", {}),
+            "routes": filtered_routes
+        }
         return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
@@ -146,8 +163,27 @@ def execute_get_station_detail(station_id: int, region_code: str) -> str:
 def execute_get_eta(region_code: str, station_id: int) -> str:
     """Thực thi lấy thời gian xe đến bến realtime"""
     try:
-        result = vinbus_client.get_eta(region_code, station_id)
-        return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
+        raw_result = vinbus_client.get_eta(region_code, station_id)
+        
+        # Tối ưu hóa Response ETA
+        filtered_eta = []
+        for route_eta in raw_result:
+            live_vehicles = []
+            for vehicle in route_eta.get("list", []):
+                live_vehicles.append({
+                    "vehicleNumber": vehicle.get("vehicleNumber"),
+                    "distance_meters": vehicle.get("distance"),
+                    "eta_seconds": vehicle.get("time")
+                })
+            
+            filtered_eta.append({
+                "routeNo": route_eta.get("routeNo"),
+                "routeName": route_eta.get("routeName"),
+                "headway": route_eta.get("headway"),
+                "live_vehicles": live_vehicles
+            })
+            
+        return json.dumps({"status": "SUCCESS", "data": filtered_eta}, ensure_ascii=False)
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
