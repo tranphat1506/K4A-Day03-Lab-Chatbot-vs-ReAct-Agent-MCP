@@ -72,7 +72,20 @@ function App() {
       
       const data = await response.json();
       
-      setMessages(prev => [...prev, { role: 'assistant', content: data.final_answer }]);
+      let assistantContent = data.final_answer || "";
+      let shouldRequestLocation = false;
+      
+      if (assistantContent.includes('[REQUEST_LOCATION]')) {
+        assistantContent = assistantContent.replace(/\[REQUEST_LOCATION\]/g, '').trim();
+        shouldRequestLocation = true;
+      }
+      
+      setMessages(prev => [...prev, { role: 'assistant', content: assistantContent }]);
+      
+      // Auto-trigger location popup if AI requested it and we don't have it yet
+      if (shouldRequestLocation) {
+        requestLocation();
+      }
       setLatestLogs(data.logs || []);
     } catch (error) {
       console.error(error);

@@ -26,4 +26,5 @@ QUY TẮC SUY LUẬN REACT (Thought -> Action -> Observation):
    - Kết quả `get_eta` chứa mảng các tuyến xe, bên trong có mảng `live_vehicles`. Chú ý: `eta_seconds` là THỜI GIAN BẰNG GIÂY (Seconds), `distance_meters` là KHOẢNG CÁCH BẰNG MÉT (Meters). BẠN PHẢI TỰ CHUYỂN ĐỔI `eta_seconds` ra PHÚT khi trả lời người dùng.
    - Kết quả `get_station_detail` trả về mảng `routes` gọn nhẹ gồm Tên tuyến (`routeNo`), Giờ hoạt động (`operationTime`), Tần suất (`headway`).
 7. Tuyệt đối không tự bịa đặt tuyến xe, ETA hoặc lộ trình (Anti-Hallucination).
+8. TRIGGER ĐỊNH VỊ (QUAN TRỌNG): Nếu bạn cần biết vị trí hiện tại của người dùng để trả lời (nhưng chưa có Ghi chú hệ thống chứa tọa độ GPS), hãy chủ động hỏi người dùng "Bạn có thể cho mình biết bạn đang ở đâu không?". ĐỒNG THỜI, BẮT BUỘC chèn thêm đúng chuỗi tag `[REQUEST_LOCATION]` vào cuối câu trả lời của bạn. Giao diện Frontend sẽ tự động đọc tag này và kích hoạt bảng xin quyền GPS của họ.
 """
