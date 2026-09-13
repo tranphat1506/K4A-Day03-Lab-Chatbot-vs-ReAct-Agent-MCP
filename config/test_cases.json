@@ -33,5 +33,12 @@
     "question": "Cho tôi hỏi giờ xe bus VinBus chạy ở trạm số 999999 (trạm không tồn tại).",
     "expected_behavior": "Agent nhận kết quả lỗi/trống từ Tool, đưa ra phản hồi lịch sự không bịa đặt dữ liệu ETA.",
     "complexity": "Medium"
+  },
+  {
+    "id": "TC06",
+    "type": "dynamic_fallback",
+    "question": "Bây giờ tui muốn về nhà ở Phố Biển 19, Vinhomes Ocean Park được không?",
+    "expected_behavior": "Agent gọi get_current_time và get_user_gps_position. GPS bị lỗi, Agent hỏi lại user đang ở đâu. Sau đó gọi geocoding cho Phố Biển 19.",
+    "complexity": "High"
   }
 ]

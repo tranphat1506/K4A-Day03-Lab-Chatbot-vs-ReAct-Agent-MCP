@@ -5,6 +5,7 @@ Mã nguồn chứa danh sách Tool Schemas (JSON Schema) và Execution Layer ph�
 """
 
 import json
+from datetime import datetime
 from typing import Dict, Any
 
 from vinbus.vinbus_api.client import VinbusClient
@@ -18,8 +19,26 @@ vinbus_client = VinbusClient(timeout=10)
 
 TOOLS_SCHEMA = [
     {
+        "name": "get_current_time",
+        "description": "Lấy thời gian hiện tại của hệ thống để xác định giờ khởi hành.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
+        "name": "get_user_gps_position",
+        "description": "Lấy vị trí tọa độ GPS hiện tại của người dùng (yêu cầu cấp quyền).",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
+    },
+    {
         "name": "geocoding_search",
-        "description": "Tìm kiếm toạ độ GPS của một địa chỉ hoặc địa điểm.",
+        "description": "Tìm kiếm toạ độ GPS của một địa chỉ hoặc địa điểm bằng văn bản.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -33,6 +52,32 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["region_code", "content"]
+        }
+    },
+    {
+        "name": "get_near_stations",
+        "description": "Tìm các trạm xe buýt lân cận trong bán kính r mét từ tọa độ cho trước.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "type": "number",
+                    "description": "Vĩ độ (latitude)"
+                },
+                "lng": {
+                    "type": "number",
+                    "description": "Kinh độ (longitude)"
+                },
+                "radius": {
+                    "type": "integer",
+                    "description": "Bán kính tìm kiếm tính bằng mét (ví dụ: 1000)"
+                },
+                "region_code": {
+                    "type": "string",
+                    "description": "Mã khu vực (ví dụ: 'hn')"
+                }
+            },
+            "required": ["lat", "lng", "radius", "region_code"]
         }
     },
     {
@@ -77,51 +122,61 @@ TOOLS_SCHEMA = [
 # 2. HÀM THỰC THI TOOL (EXECUTION LAYER) GỌI VINBUS API
 # ==============================================================================
 
+def execute_get_current_time() -> str:
+    """Trả về giờ hiện tại của hệ thống"""
+    now = datetime.now()
+    return json.dumps({
+        "status": "SUCCESS",
+        "time": now.strftime("%H:%M:%S"),
+        "date": now.strftime("%Y-%m-%d")
+    }, ensure_ascii=False)
+
+def execute_get_user_gps_position() -> str:
+    """Mô phỏng lỗi không lấy được GPS để test graceful fallback của LLM"""
+    return json.dumps({
+        "status": "ERROR",
+        "error_code": "PERMISSION_DENIED",
+        "message": "Không thể lấy vị trí GPS vì người dùng chưa cấp quyền trình duyệt. Vui lòng yêu cầu người dùng tự nhập địa chỉ."
+    }, ensure_ascii=False)
+
 def execute_geocoding_search(region_code: str, content: str) -> str:
     """Thực thi tìm kiếm tọa độ từ địa chỉ"""
     try:
         result = vinbus_client.geocoding_search(region_code, content)
-        return json.dumps({
-            "status": "SUCCESS",
-            "data": result
-        }, ensure_ascii=False)
+        return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({
-            "status": "ERROR",
-            "message": str(e)
-        }, ensure_ascii=False)
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
+
+def execute_get_near_stations(lat: float, lng: float, radius: int, region_code: str) -> str:
+    """Tìm các trạm lân cận trong bán kính r mét."""
+    try:
+        result = vinbus_client.get_near_stations(lat, lng, radius, region_code)
+        return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
 def execute_get_station_detail(station_id: int, region_code: str) -> str:
     """Thực thi lấy chi tiết trạm xe buýt"""
     try:
         result = vinbus_client.get_station_detail(station_id, region_code)
-        return json.dumps({
-            "status": "SUCCESS",
-            "data": result
-        }, ensure_ascii=False)
+        return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({
-            "status": "ERROR",
-            "message": str(e)
-        }, ensure_ascii=False)
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
 def execute_get_eta(region_code: str, station_id: int) -> str:
     """Thực thi lấy thời gian xe đến bến realtime"""
     try:
         result = vinbus_client.get_eta(region_code, station_id)
-        return json.dumps({
-            "status": "SUCCESS",
-            "data": result
-        }, ensure_ascii=False)
+        return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({
-            "status": "ERROR",
-            "message": str(e)
-        }, ensure_ascii=False)
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
 # Router gọi tool thực tế
 TOOL_ROUTER = {
+    "get_current_time": execute_get_current_time,
+    "get_user_gps_position": execute_get_user_gps_position,
     "geocoding_search": execute_geocoding_search,
+    "get_near_stations": execute_get_near_stations,
     "get_station_detail": execute_get_station_detail,
     "get_eta": execute_get_eta
 }
