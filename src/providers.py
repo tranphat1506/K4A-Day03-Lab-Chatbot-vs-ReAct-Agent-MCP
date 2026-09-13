@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 """
 🔌 MULTI-PROVIDER LLM ADAPTER (Google Gemini, OpenAI & Offline Mock)
 Hỗ trợ Native Tool Calling và chuyển đổi linh hoạt qua biến môi trường LLM_PROVIDER.
@@ -17,13 +18,17 @@ if sys.stdout.encoding != 'utf-8':
 
 load_dotenv()
 
-class BaseLLMProvider:
-    """Interface cơ sở cho các LLM Provider hỗ trợ Native Tool Calling"""
+class BaseLLMProvider(ABC):
+    """Lớp trừu tượng cho các LLM Providers"""
+    
+    @abstractmethod
     def generate(self, prompt: str, system_prompt: str = "") -> str:
-        raise NotImplementedError
+        pass
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
-        raise NotImplementedError
+    @abstractmethod
+    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "", chat_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+        """Thực thi suy luận có gọi Tool. Trả về dict chứa type ('text' hoặc 'tool_call') và dữ liệu tương ứng."""
+        pass
 
 
 class MockOfflineProvider(BaseLLMProvider):
@@ -34,7 +39,7 @@ class MockOfflineProvider(BaseLLMProvider):
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         return f"[Mock VinBus Agent]: Xin chào! Tôi đã nhận được câu hỏi '{prompt}'. (Chế độ Mock Offline không thể gọi API thật)."
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
+    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "", chat_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
         prompt_lower = prompt.lower()
         
         # Mô phỏng nhận diện intent gọi Tool
@@ -85,10 +90,10 @@ class GeminiProvider(BaseLLMProvider):
         except Exception as e:
             return f"[Gemini Exception]: {str(e)}"
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
+    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "", chat_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
         if not self.api_key or self.api_key == "your_gemini_api_key_here":
             print("ℹ️ [Gemini Provider]: Chưa tìm thấy GEMINI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
-            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt, chat_history)
         
         try:
             from google import genai
@@ -114,9 +119,19 @@ class GeminiProvider(BaseLLMProvider):
                 temperature=0.2
             )
 
+            # Chuyển đổi chat_history sang định dạng Gemini Content
+            contents = []
+            if chat_history:
+                for msg in chat_history:
+                    # Chuyển "assistant" thành "model" cho Gemini
+                    role = "model" if msg["role"] == "assistant" else "user"
+                    contents.append(types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])]))
+            # Thêm prompt hiện tại
+            contents.append(types.Content(role="user", parts=[types.Part.from_text(text=prompt)]))
+
             response = client.models.generate_content(
                 model=self.model_name,
-                contents=prompt,
+                contents=contents,
                 config=config
             )
 
@@ -139,7 +154,7 @@ class GeminiProvider(BaseLLMProvider):
 
         except Exception as e:
             print(f"⚠️ [Gemini API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
-            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt, chat_history)
 
 
 class OpenAIProvider(BaseLLMProvider):
@@ -157,16 +172,18 @@ class OpenAIProvider(BaseLLMProvider):
             messages = []
             if system_prompt:
                 messages.append({"role": "system", "content": system_prompt})
+            if chat_history:
+                messages.extend(chat_history)
             messages.append({"role": "user", "content": prompt})
             response = client.chat.completions.create(model=self.model_name, messages=messages)
             return response.choices[0].message.content or ""
         except Exception as e:
             return f"[OpenAI Exception]: {str(e)}"
 
-    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
+    def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "", chat_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
         if not self.api_key or self.api_key == "your_openai_api_key_here":
             print("ℹ️ [OpenAI Provider]: Chưa tìm thấy OPENAI_API_KEY hợp lệ. Tự động chuyển sang Mock Offline.")
-            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt, chat_history)
 
         try:
             from openai import OpenAI
@@ -188,6 +205,8 @@ class OpenAIProvider(BaseLLMProvider):
             messages = []
             if system_prompt:
                 messages.append({"role": "system", "content": system_prompt})
+            if chat_history:
+                messages.extend(chat_history)
             messages.append({"role": "user", "content": prompt})
 
             response = client.chat.completions.create(
@@ -215,7 +234,7 @@ class OpenAIProvider(BaseLLMProvider):
                 }
         except Exception as e:
             print(f"⚠️ [OpenAI API Warning]: Không thể kết nối live API ({str(e)}). Tự động fallback về Mock.")
-            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt)
+            return MockOfflineProvider().generate_with_tools(prompt, tools_schema, system_prompt, chat_history)
 
 
 def get_llm_provider() -> BaseLLMProvider:

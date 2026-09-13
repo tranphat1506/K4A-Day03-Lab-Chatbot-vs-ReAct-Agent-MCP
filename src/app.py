@@ -61,7 +61,7 @@ def run_baseline_chatbot(user_query: str, provider):
     print(f"🤖 Chatbot phản hồi:\n{response}")
 
 
-def run_react_agent(user_query: str, provider, mcp_server: MCPVinBusServer) -> list:
+def run_react_agent(user_query: str, provider, mcp_server: MCPVinBusServer, chat_history: list = None) -> list:
     """
     [REACT AGENT LOOP] Thực thi vòng lặp Thought -> Action -> Observation với MCP Server
     Trả về danh sách trace log của phiên thực thi.
@@ -78,7 +78,7 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPVinBusServer) -> l
         print(f"\n--- 🔄 Vòng lặp ReAct Loop (Step {step}/{MAX_ITERATIONS}) ---")
         
         # Gọi LLM với Native Tool Calling Specs
-        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT)
+        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT, chat_history=chat_history)
         latency_ms = round((time.time() - step_start_time) * 1000, 2)
         
         thought = llm_response.get("thought", "Đang suy luận...")
@@ -157,14 +157,24 @@ if __name__ == "__main__":
         print("   - Tìm đường: 'Tôi đang đứng ở [21.0029, 105.8202] (Ngã Tư Sở), làm sao để bắt xe bus về Phố Biển 19, Vinhomes Ocean Park?'")
         print("   - Tra cứu trạm: 'Trạm VinUni (ID 1234) có xe nào đi qua không?'")
         print("   - Gõ 'exit' hoặc 'quit' để kết thúc phiên trò chuyện.\n")
+        global_chat_history = []
         while True:
             try:
                 user_input = input("👤 Sinh viên hỏi: ").strip()
                 if not user_input or user_input.lower() in ["exit", "quit"]:
                     print("👋 Tạm biệt! Kết thúc phiên trò chuyện.")
                     break
-                logs = run_react_agent(user_input, provider, mcp_server)
+                logs = run_react_agent(user_input, provider, mcp_server, chat_history=global_chat_history)
                 save_waterfall_trace(logs)
+                
+                # Cập nhật lịch sử chat
+                global_chat_history.append({"role": "user", "content": user_input})
+                final_answer = ""
+                for log in logs:
+                    if log.get("action_type") == "FINAL_ANSWER":
+                        final_answer = log.get("output", "")
+                global_chat_history.append({"role": "assistant", "content": final_answer})
+                
             except (KeyboardInterrupt, EOFError):
                 print("\n👋 Đã thoát phiên tương tác.")
                 break
