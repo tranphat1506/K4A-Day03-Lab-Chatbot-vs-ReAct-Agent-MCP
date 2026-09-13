@@ -18,17 +18,53 @@ Kiến trúc **ReAct (Reasoning + Acting)** là hoàn hảo cho bài toán này 
 
 ---
 
-## 3. Workflow Kiến trúc Hệ thống
-Dưới đây là luồng thực thi (Thought - Action - Observation) khi Agent giải quyết một truy vấn của người dùng, giao tiếp qua **MCP Server (Model Context Protocol)**.
+## 3. Các Biểu Đồ Workflow (Dành cho Thuyết Trình)
+
+### Biểu đồ 1: Tổng quan Kiến trúc Hệ thống (System Architecture)
+Biểu đồ này thể hiện cấu trúc Client-Server hiện đại của dự án, tách biệt giữa Giao diện người dùng (React) và Lõi AI (FastAPI + LLM).
+
+```mermaid
+flowchart LR
+    A[Client UI \n(Vite + React)] <-->|REST API| B[Backend Server \n(Python FastAPI)]
+    B <-->|Chat History & Prompt| C{ReAct Agent \n(Gemini/OpenAI)}
+    C <-->|Tool Call| D[MCP Server \n(Python)]
+    D <-->|HTTP| E[(VinBus API)]
+    
+    style A fill:#10b981,stroke:#047857,color:white
+    style B fill:#3b82f6,stroke:#1d4ed8,color:white
+    style C fill:#8b5cf6,stroke:#6d28d9,color:white
+    style D fill:#f59e0b,stroke:#b45309,color:white
+    style E fill:#ef4444,stroke:#b91c1c,color:white
+```
+
+### Biểu đồ 2: Luồng xử lý Tự động định vị GPS (Magic UX Flow)
+Đây là tính năng độc quyền: AI Agent điều khiển UI của người dùng để xin quyền GPS mà không cần code logic phức tạp ở Backend.
 
 ```mermaid
 sequenceDiagram
-    actor U as Người dùng (User)
+    actor User as Khách hàng
+    participant React as Frontend (React)
+    participant Agent as ReAct Agent
+    
+    User->>React: "Tìm xe buýt gần tôi nhất"
+    React->>Agent: Send Query
+    Note over Agent: Agent phân tích thấy thiếu vị trí<br/>nhưng biết có thể nhờ Frontend lấy GPS.
+    Agent-->>React: Response: "Bạn cho mình xin vị trí nhé? [REQUEST_LOCATION]"
+    Note over React: 1. FE ẩn thẻ [REQUEST_LOCATION] đi<br/>2. FE tự động kích hoạt API Trình duyệt
+    React->>User: Hiển thị Popup: "Allow Location Access?"
+    User-->>React: Click "Cho phép"
+    Note over React: Lấy được GPS: Lat: 21.0, Lng: 105.8
+    React->>Agent: Tự động đính kèm GPS vào lượt chat tiếp theo!
+```
+
+### Biểu đồ 3: Luồng suy luận đa bước (ReAct Loop)
+Biểu đồ thể hiện cách Agent làm việc để trả lời một câu hỏi phức tạp.
+
+```mermaid
+sequenceDiagram
     participant A as ReAct Agent (LLM)
     participant M as MCP Server
     participant V as VinBus API
-    
-    U->>A: "Tôi ở Ngã Tư Sở, muốn về VinUni"
     
     rect rgb(240, 248, 255)
     Note over A,V: Bắt đầu Vòng lặp ReAct Loop (Tối đa 10 steps)
@@ -52,8 +88,6 @@ sequenceDiagram
     M-->>A: 👁️ OBSERVATION 3: Xe 29F-008.36 sắp tới trong 3 phút
     
     end
-    
-    A->>U: 🏁 FINAL ANSWER: Hướng dẫn khách ra trạm bắt tuyến E01 chờ 3 phút.
 ```
 
 ---
@@ -71,33 +105,35 @@ Hệ thống cung cấp cho Agent 5 công cụ đắc lực thông qua chuẩn M
 
 ---
 
-## 5. Hướng dẫn chạy Demo UI
-Để phần trình bày trực quan và dễ theo dõi trace log từng bước của LLM, dự án đã tích hợp giao diện **Streamlit**.
+## 5. Hướng dẫn chạy Hệ thống để Demo
+Hệ thống được thiết kế theo chuẩn Client-Server chuyên nghiệp. Chạy 2 lệnh sau ở 2 Terminal riêng biệt:
 
-**Cách cài đặt và chạy:**
+**1. Khởi động Backend AI (Terminal 1)**
 ```bash
-# 1. Cài đặt Streamlit
-pip install streamlit
-
-# 2. Khởi chạy giao diện Demo
-streamlit run demo_ui.py
+pip install fastapi uvicorn
+python api.py
 ```
-*(Thử nghiệm gõ: "Tôi đang ở Times City, bao giờ có xe E01 đi qua?")*
+
+**2. Khởi động Frontend Trợ lý (Terminal 2)**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+*(Mở trình duyệt tại `http://localhost:5173` để thao tác với giao diện Client siêu đẹp)*
 
 ---
 ## 6. Kịch bản Demo Live (Sao chép & Dán)
 
-**Kịch bản 1: Hỏi đáp bối cảnh (Memory)**
-* **User (Lượt 1):** `Chào bạn, tôi là Tân Sinh Viên, đang đứng ở Ngã Tư Sở.`
-* **Agent:** Chào bạn! Bạn đang đứng ở Ngã Tư Sở. Bạn muốn đi đâu để mình tìm xe buýt giúp?
-* **User (Lượt 2):** `Bạn nhớ tôi vừa bảo tôi đứng ở đâu không?`
-* **Agent:** Có chứ, bạn vừa cho biết bạn đang đứng ở Ngã Tư Sở.
-*(Ý nghĩa: Phô diễn khả năng lưu trữ Context/History của mô hình).*
+**Kịch bản 1: Phô diễn Luồng Tự Động Xin GPS (Killer Feature)**
+* **User (Click nút Tắt GPS nếu đang bật):** `Cho tôi biết trạm xe buýt gần tôi nhất ở đâu?`
+* **Agent:** Sẽ trả lời đại loại *"Bạn cho mình xin vị trí nhé"* ➔ **BÙM!** Trình duyệt văng ra cửa sổ hỏi quyền Location cực kỳ chuyên nghiệp.
+* *(Sau khi Client cấp quyền GPS, hãy thử hỏi lại câu đó, hệ thống sẽ tự đọc tọa độ thực của Client và tìm trạm VinBus ngay sát vách!)*
 
 **Kịch bản 2: Tìm đường + ETA Thời gian thực (Multi-step Reasoning)**
-* **User:** `Từ chỗ tôi (Ngã Tư Sở) muốn về Đại Học VinUni thì đi tuyến nào và bao giờ xe tới?`
-* **Trace Log Dự Kiến (Sẽ show trên UI):**
+* **User:** `Từ Ngã Tư Sở muốn về Đại Học VinUni thì đi tuyến nào và bao giờ xe tới?`
+* **Trace Log Dự Kiến (Sẽ show trên màn hình phải của UI):**
   1. `geocoding_search`: Lấy toạ độ Ngã Tư Sở và VinUni.
   2. `get_directions`: Tìm lộ trình nối 2 điểm ➔ Trả về tuyến E01.
   3. `get_eta`: Lấy thời gian xe tới bến realtime.
-* **Agent:** Sẽ hướng dẫn người dùng bắt tuyến E01, báo chính xác mã biển số xe và giục người dùng ra bến trong `X phút` nữa.
+* **Agent:** Hướng dẫn người dùng bắt tuyến E01, báo chính xác mã biển số xe và thời gian xe tới (tự quy đổi từ giây sang phút).
