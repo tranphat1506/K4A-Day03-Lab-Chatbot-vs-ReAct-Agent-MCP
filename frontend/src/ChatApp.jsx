@@ -238,20 +238,29 @@ function App() {
                     ? 'bg-emerald-600 text-white' 
                     : 'bg-white border border-gray-100 text-gray-800'
                 }`}>
-                  <div className="markdown-body text-sm">
-                    <ReactMarkdown
-                      components={{
-                        strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
-                        a: ({node, ...props}) => <a className="text-emerald-600 underline" {...props} />,
-                        ul: ({node, ...props}) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
-                        ol: ({node, ...props}) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />,
-                        li: ({node, ...props}) => <li {...props} />,
-                        p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />
-                      }}
-                    >
-                      {msg.content}
-                    </ReactMarkdown>
-                  </div>
+                  {msg.type === 'trip_plan' ? (
+                    <ProposedPlanCard 
+                      regionCode={msg.content.region_code}
+                      boardingStationId={msg.content.boarding_station_id}
+                      routeNo={msg.content.route_no}
+                      walkTimeMins={msg.content.walk_time_mins}
+                    />
+                  ) : (
+                    <div className="markdown-body text-sm">
+                      <ReactMarkdown
+                        components={{
+                          strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
+                          a: ({node, ...props}) => <a className="text-emerald-600 underline" {...props} />,
+                          ul: ({node, ...props}) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
+                          ol: ({node, ...props}) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />,
+                          li: ({node, ...props}) => <li {...props} />,
+                          p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                 </div>
 
                 {msg.role === 'user' && (
