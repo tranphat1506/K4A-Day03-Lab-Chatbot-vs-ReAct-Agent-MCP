@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { FiMaximize, FiMinimize } from 'react-icons/fi';
+import { FiMaximize, FiMinimize, FiMapPin, FiTarget, FiTruck } from 'react-icons/fi';
 
 // Icons
 const startIcon = new L.Icon({
@@ -26,9 +26,15 @@ const busIcon = new L.Icon({
   iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
 });
 
-function ChangeView({ bounds }) {
+function MapController({ bounds, flyToTarget }) {
   const map = useMap();
-  if (bounds) map.fitBounds(bounds, { padding: [50, 50] });
+  useEffect(() => {
+    if (flyToTarget) {
+      map.flyTo(flyToTarget.coords, flyToTarget.zoom || 16, { duration: 1.5 });
+    } else if (bounds) {
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [bounds, flyToTarget, map]);
   return null;
 }
 
@@ -36,6 +42,7 @@ export default function LiveTrackerMap({ startLat, startLng, stationLat, station
   const [fullPath, setFullPath] = useState([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [path, setPath] = useState([]);
+  const [flyToTarget, setFlyToTarget] = useState(null);
   
   // Fetch đường đi đầy đủ từ API directions
   useEffect(() => {
@@ -124,17 +131,52 @@ export default function LiveTrackerMap({ startLat, startLng, stationLat, station
           </Marker>
         ))}
         
-        <ChangeView bounds={bounds} />
+        <MapController bounds={bounds} flyToTarget={flyToTarget} />
       </MapContainer>
       
-      {/* Nút phóng to đặt SAU MapContainer để nổi lên trên cùng */}
-      <button 
-        onClick={() => setIsFullscreen(!isFullscreen)}
-        className="absolute top-2 right-2 z-[1000] bg-white p-2 rounded-lg shadow-lg hover:bg-gray-50 border-2 border-emerald-500 text-emerald-700 font-bold flex items-center gap-2"
-        title={isFullscreen ? "Thu nhỏ" : "Phóng to"}
-      >
-        {isFullscreen ? <><FiMinimize size={18} /> Thu nhỏ</> : <><FiMaximize size={18} /> Phóng to</>}
-      </button>
+      {/* Thanh công cụ Map (Nổi lên trên cùng) */}
+      <div className="absolute top-2 right-2 z-[1000] flex flex-col gap-2">
+        <button 
+          onClick={() => setIsFullscreen(!isFullscreen)}
+          className="bg-white p-2.5 rounded-lg shadow-lg hover:bg-emerald-50 border-2 border-emerald-500 text-emerald-700 font-bold flex items-center justify-center gap-2 transition-colors"
+          title={isFullscreen ? "Thu nhỏ" : "Phóng to"}
+        >
+          {isFullscreen ? <><FiMinimize size={18} /> Thu nhỏ</> : <><FiMaximize size={18} /> Phóng to</>}
+        </button>
+        
+        {startLat && startLng && (
+          <button 
+            onClick={() => setFlyToTarget({coords: [startLat, startLng], zoom: 17})}
+            className="bg-white p-2.5 rounded-lg shadow-lg hover:bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center gap-2 transition-colors"
+            title="Đến Điểm Xuất Phát"
+          >
+            <FiTarget size={18} /> Điểm đi
+          </button>
+        )}
+        
+        {endLat && endLng && (
+          <button 
+            onClick={() => setFlyToTarget({coords: [endLat, endLng], zoom: 17})}
+            className="bg-white p-2.5 rounded-lg shadow-lg hover:bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center gap-2 transition-colors"
+            title="Đến Điểm Đến"
+          >
+            <FiMapPin size={18} /> Điểm đến
+          </button>
+        )}
+        
+        {buses.length > 0 && (
+          <button 
+            onClick={() => {
+              const nearest = buses.reduce((prev, curr) => (prev.time < curr.time) ? prev : curr);
+              setFlyToTarget({coords: [nearest.lat, nearest.lng], zoom: 17});
+            }}
+            className="bg-white p-2.5 rounded-lg shadow-lg hover:bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center gap-2 transition-colors"
+            title="Đến Xe Gần Nhất"
+          >
+            <FiTruck size={18} /> Xe gần nhất
+          </button>
+        )}
+      </div>
     </div>
   );
 }

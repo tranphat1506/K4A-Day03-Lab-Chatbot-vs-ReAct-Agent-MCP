@@ -118,14 +118,26 @@ export default function PlansManager() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-slate-50 p-4 rounded-xl">
-                  <span className="text-xs text-gray-500 font-semibold uppercase">Mã Trạm Đón</span>
-                  <p className="text-lg font-bold text-gray-800 mt-1">{selectedPlan.stationName || selectedPlan.boardingStationId}</p>
+              <div className="bg-white rounded-xl border border-emerald-100 shadow-sm mb-8 overflow-hidden">
+                <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-emerald-800 font-medium">Từ vị trí của bạn</p>
+                    <p className="text-xs text-emerald-600 font-mono mt-1">{selectedPlan.startLat?.toFixed(4)}, {selectedPlan.startLng?.toFixed(4)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-emerald-800 font-medium">Đến điểm cuối</p>
+                    <p className="text-xs text-emerald-600 font-mono mt-1">{selectedPlan.endLat?.toFixed(4) || "Chưa xác định"}, {selectedPlan.endLng?.toFixed(4) || ""}</p>
+                  </div>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl">
-                  <span className="text-xs text-gray-500 font-semibold uppercase">Thời Gian Đi Bộ</span>
-                  <p className="text-lg font-bold text-gray-800 mt-1">{selectedPlan.walkTimeMins} phút</p>
+                <div className="grid grid-cols-2 divide-x divide-gray-100">
+                  <div className="p-4 text-center">
+                    <span className="text-xs text-gray-500 font-semibold uppercase block mb-1">Mã Trạm Đón</span>
+                    <p className="text-lg font-bold text-gray-800">{selectedPlan.stationName || selectedPlan.boardingStationId}</p>
+                  </div>
+                  <div className="p-4 text-center">
+                    <span className="text-xs text-gray-500 font-semibold uppercase block mb-1">Thời Gian Đi Bộ</span>
+                    <p className="text-lg font-bold text-emerald-600">{selectedPlan.walkTimeMins} phút</p>
+                  </div>
                 </div>
               </div>
 
