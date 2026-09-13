@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaBus, FaPaperPlane, FaUserAstronaut, FaRoute, FaRobot, FaCheckCircle, FaSpinner } from 'react-icons/fa';
-import { BiNetworkChart, BiBot } from 'react-icons/bi';
+import { FiSend, FiUser, FiCpu, FiTerminal, FiClock } from 'react-icons/fi';
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -40,101 +39,89 @@ function App() {
       setLatestLogs(data.logs || []);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', content: "Xin lỗi, mình đang gặp sự cố kết nối tới máy chủ VinBus 😔" }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "System error: Connection refused." }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
+    <div className="flex h-screen bg-white font-mono text-sm overflow-hidden">
       
-      {/* CỘT TRÁI: GIAO DIỆN CHAT FRIENDLY */}
-      <div className="w-full lg:w-2/3 flex flex-col bg-[#F8FAFC] shadow-2xl z-10 relative">
+      {/* CỘT TRÁI: MINIMALIST CHAT */}
+      <div className="w-full lg:w-2/3 flex flex-col bg-white border-r border-gray-200 z-10 relative">
         
-        {/* Header Friendly */}
-        <div className="px-6 py-4 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between sticky top-0 z-20">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-md">
-                <FaBus size={22} />
-              </div>
-              <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></span>
+        {/* Header */}
+        <div className="px-6 py-4 bg-white border-b border-gray-200 flex items-center justify-between sticky top-0 z-20">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-black text-white flex items-center justify-center">
+              <FiCpu size={16} />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-slate-800 tracking-tight">VinBus Buddy</h1>
-              <p className="text-sm text-slate-500 font-medium">Trợ lý hỗ trợ tìm đường & tra cứu xe buýt</p>
+              <h1 className="text-base font-semibold text-black tracking-tight">VinBus Agent</h1>
+              <p className="text-xs text-gray-500">Autonomous navigation assistant</p>
             </div>
           </div>
         </div>
 
         {/* Khu vực nội dung Chat */}
-        <div className="flex-1 p-4 sm:p-8 overflow-y-auto scroll-smooth">
+        <div className="flex-1 p-6 overflow-y-auto scroll-smooth">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-fade-in-up">
-              <div className="w-28 h-28 bg-emerald-100 rounded-full flex items-center justify-center shadow-inner">
-                <BiBot size={60} className="text-emerald-500" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-slate-700 mb-2">Xin chào! Mình là VinBus Buddy 👋</h2>
-                <p className="text-slate-500 max-w-md mx-auto">
-                  Mình có thể giúp bạn tìm đường, định vị trạm gần nhất và xem xe buýt sắp tới trong bao nhiêu phút nữa!
-                </p>
-              </div>
-              <div className="flex flex-wrap justify-center gap-3 mt-4">
+            <div className="flex flex-col h-full items-start justify-end pb-10 space-y-4">
+              <h2 className="text-2xl font-light text-black">VinBus Navigation System</h2>
+              <p className="text-gray-500 max-w-md">
+                Enter your location and destination. The system will retrieve real-time telemetry from the VinBus network.
+              </p>
+              <div className="flex gap-2 mt-4">
                 <button 
-                  className="px-5 py-2.5 bg-white shadow-sm border border-slate-200 text-emerald-600 rounded-full text-sm font-semibold hover:border-emerald-300 hover:bg-emerald-50 transition-all"
-                  onClick={() => setInput("Mình đang ở Ngã Tư Sở, muốn đi VinUni")}
+                  className="px-4 py-2 border border-gray-200 text-gray-600 hover:border-black hover:text-black transition-colors"
+                  onClick={() => setInput("Từ Ngã Tư Sở đi VinUni")}
                 >
-                  📍 Từ Ngã Tư Sở đi VinUni
+                  Nga Tu So to VinUni
                 </button>
                 <button 
-                  className="px-5 py-2.5 bg-white shadow-sm border border-slate-200 text-emerald-600 rounded-full text-sm font-semibold hover:border-emerald-300 hover:bg-emerald-50 transition-all"
-                  onClick={() => setInput("Gần đây có trạm xe buýt nào không?")}
+                  className="px-4 py-2 border border-gray-200 text-gray-600 hover:border-black hover:text-black transition-colors"
+                  onClick={() => setInput("Tìm trạm xe buýt gần nhất")}
                 >
-                  🚏 Tìm trạm gần đây
+                  Find nearest station
                 </button>
               </div>
             </div>
           )}
           
-          <div className="space-y-6">
+          <div className="space-y-8">
             {messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'assistant' && (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 flex-shrink-0 flex items-center justify-center text-white mr-3 shadow-md">
-                    <BiBot size={22} />
+                  <div className="w-8 h-8 bg-black flex-shrink-0 flex items-center justify-center text-white mr-4">
+                    <FiCpu size={14} />
                   </div>
                 )}
                 
-                <div className={`max-w-[85%] sm:max-w-[75%] rounded-3xl p-5 shadow-sm text-[15px] leading-relaxed ${
+                <div className={`max-w-[80%] p-4 text-[14px] leading-relaxed border ${
                   msg.role === 'user' 
-                    ? 'bg-emerald-600 text-white rounded-br-sm' 
-                    : 'bg-white text-slate-700 border border-slate-100 rounded-bl-sm shadow-md'
+                    ? 'bg-gray-50 border-gray-200 text-black' 
+                    : 'bg-white border-gray-200 text-black'
                 }`}>
                   <div className="whitespace-pre-wrap">{msg.content}</div>
                 </div>
 
                 {msg.role === 'user' && (
-                  <div className="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center text-slate-500 ml-3 shadow-inner">
-                    <FaUserAstronaut size={18} />
+                  <div className="w-8 h-8 bg-gray-200 flex-shrink-0 flex items-center justify-center text-black ml-4">
+                    <FiUser size={14} />
                   </div>
                 )}
               </div>
             ))}
             
-            {/* Typing Indicator */}
+            {/* Loading Indicator */}
             {loading && (
               <div className="flex justify-start items-center">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 flex-shrink-0 flex items-center justify-center text-white mr-3 shadow-md">
-                  <BiBot size={22} />
+                <div className="w-8 h-8 bg-black flex-shrink-0 flex items-center justify-center text-white mr-4">
+                  <FiCpu size={14} />
                 </div>
-                <div className="bg-white border border-slate-100 rounded-3xl rounded-bl-sm p-4 shadow-md flex items-center gap-2">
-                  <div className="flex gap-1">
-                    <span className="w-2.5 h-2.5 bg-emerald-300 rounded-full animate-bounce"></span>
-                    <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay: "0.15s"}}></span>
-                    <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-bounce" style={{animationDelay: "0.3s"}}></span>
-                  </div>
+                <div className="p-4 border border-gray-200 text-gray-400 bg-white flex items-center gap-2">
+                  Processing request...
                 </div>
               </div>
             )}
@@ -142,85 +129,78 @@ function App() {
           </div>
         </div>
 
-        {/* Input Area Friendly */}
-        <div className="p-4 bg-white/80 backdrop-blur-md border-t border-slate-200">
-          <div className="max-w-4xl mx-auto relative flex items-center bg-slate-100 rounded-full p-1.5 shadow-inner">
+        {/* Input Area */}
+        <div className="p-4 bg-white border-t border-gray-200">
+          <div className="max-w-4xl mx-auto relative flex items-center">
             <input 
               type="text" 
-              className="w-full bg-transparent text-slate-700 rounded-full pl-6 pr-14 py-3 focus:outline-none placeholder-slate-400"
-              placeholder="Nhắn tin cho VinBus Buddy..."
+              className="w-full bg-white border border-gray-300 text-black p-4 focus:outline-none focus:border-black transition-colors"
+              placeholder="Enter prompt..."
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
               disabled={loading}
             />
             <button 
-              className={`absolute right-2 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all transform ${
+              className={`absolute right-4 text-black transition-colors ${
                 loading || !input.trim() 
-                  ? 'bg-slate-300 scale-95' 
-                  : 'bg-emerald-500 hover:bg-emerald-600 hover:scale-105 shadow-md'
+                  ? 'opacity-30 cursor-not-allowed' 
+                  : 'hover:text-gray-500'
               }`}
               onClick={handleSend}
               disabled={loading || !input.trim()}
             >
-              <FaPaperPlane size={14} className={input.trim() && !loading ? "mr-0.5 mt-0.5" : ""} />
+              <FiSend size={18} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* CỘT PHẢI: TRACE LOGS (Dành cho Dev/Demo) */}
-      <div className="hidden lg:flex w-1/3 bg-white flex-col border-l border-slate-200">
-        <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+      {/* CỘT PHẢI: TRACE LOGS */}
+      <div className="hidden lg:flex w-1/3 bg-gray-50 flex-col">
+        <div className="p-4 border-b border-gray-200 bg-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <BiNetworkChart size={22} className="text-emerald-500" />
-            <h2 className="text-sm font-extrabold text-slate-700 tracking-wider uppercase">System Trace</h2>
+            <FiTerminal size={16} className="text-black" />
+            <h2 className="text-xs font-semibold text-black tracking-widest uppercase">System Log</h2>
           </div>
-          <span className="text-[10px] font-bold bg-emerald-100 px-2.5 py-1 rounded-full text-emerald-600">ReAct Loop</span>
+          <span className="text-[10px] uppercase border border-gray-300 px-2 py-0.5 text-gray-500 bg-white">ReAct Tracer</span>
         </div>
         
-        <div className="flex-1 p-5 overflow-y-auto space-y-5 custom-scrollbar bg-slate-50">
+        <div className="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
           {latestLogs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3">
-              <FaSpinner size={32} className="opacity-20" />
-              <p className="text-sm font-medium">Bảng theo dõi tiến trình Agent</p>
+            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
+              <span className="text-xs">Awaiting execution.</span>
             </div>
           ) : (
             latestLogs.map((log, index) => (
-              <div key={index} className="relative pl-6 pb-2 border-l-2 border-slate-200 last:border-l-0 last:pb-0 group">
-                <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-4 border-slate-50 ${
-                  log.action_type === 'FINAL_ANSWER' ? 'bg-emerald-500' : 'bg-blue-400'
-                }`}></div>
+              <div key={index} className="pl-4 pb-4 border-l border-gray-300 last:border-l-0 last:pb-0 relative">
+                <div className={`absolute -left-[5px] top-0 w-2.5 h-2.5 border border-gray-400 bg-white`}></div>
 
-                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                  <div className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider flex justify-between items-center ${
-                    log.action_type === 'FINAL_ANSWER' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
-                  }`}>
-                    <span>Step {log.step} - {log.action_type === 'FINAL_ANSWER' ? 'Final Answer' : log.tool_name}</span>
-                    <span className="flex items-center gap-1 opacity-70 bg-white px-2 py-0.5 rounded-full shadow-sm">
-                      <FaClock size={10} /> {log.latency_ms}ms
+                <div className="bg-white border border-gray-200 p-3">
+                  <div className="text-[11px] font-semibold text-black uppercase tracking-wider flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
+                    <span>{log.action_type === 'FINAL_ANSWER' ? 'FINAL_ANSWER' : log.tool_name}</span>
+                    <span className="flex items-center gap-1 text-gray-400 font-normal">
+                      <FiClock size={10} /> {log.latency_ms}ms
                     </span>
                   </div>
                   
-                  <div className="p-4 space-y-3 text-[13px]">
+                  <div className="space-y-3 text-[12px]">
                     <div>
-                      <span className="text-slate-500 font-bold mb-1.5 flex items-center gap-1">
-                        <FaRobot className="text-slate-400"/> Agent Suy Luận:
-                      </span>
-                      <p className="text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100">{log.thought}</p>
+                      <span className="text-gray-400 uppercase text-[10px] block mb-1">Thought</span>
+                      <p className="text-gray-800">{log.thought}</p>
                     </div>
                     
                     {log.action_type === 'TOOL_EXECUTION' && (
-                      <div className="space-y-3 mt-3 pt-3 border-t border-slate-100">
+                      <div className="space-y-2 mt-2 pt-2 border-t border-gray-100">
                         <div>
-                          <span className="text-slate-500 font-bold block mb-1 text-[11px] uppercase tracking-wider">Tham số (Input)</span>
-                          <div className="bg-slate-800 p-2.5 rounded-lg text-emerald-300 font-mono text-xs overflow-x-auto shadow-inner">
+                          <span className="text-gray-400 uppercase text-[10px] block mb-1">Arguments</span>
+                          <div className="bg-gray-50 border border-gray-100 p-2 text-gray-600 font-mono text-[10px] overflow-x-auto">
                             {JSON.stringify(log.arguments)}
                           </div>
                         </div>
                         <div>
-                          <span className="text-slate-500 font-bold block mb-1 text-[11px] uppercase tracking-wider">Kết quả (Observation)</span>
-                          <div className="bg-slate-800 p-2.5 rounded-lg text-yellow-300 font-mono text-xs overflow-x-auto max-h-32 shadow-inner">
+                          <span className="text-gray-400 uppercase text-[10px] block mb-1">Observation</span>
+                          <div className="bg-gray-50 border border-gray-100 p-2 text-gray-600 font-mono text-[10px] overflow-x-auto max-h-32">
                             {JSON.stringify(log.observation)}
                           </div>
                         </div>
