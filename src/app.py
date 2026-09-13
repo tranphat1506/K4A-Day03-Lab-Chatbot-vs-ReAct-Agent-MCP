@@ -6,6 +6,7 @@ Thực thi so sánh giữa Chatbot Baseline (Cấp 2) và ReAct Agent kết nố
 import json
 import os
 import sys
+from datetime import datetime, timezone, timedelta
 import time
 from dotenv import load_dotenv
 
@@ -57,7 +58,14 @@ def save_waterfall_trace(trace_data: list):
 def run_baseline_chatbot(user_query: str, provider):
     """Chạy Chatbot gốc (Cấp 2) không có công cụ gọi Tool"""
     print(f"\n💬 [CHATBOT BASELINE] Câu hỏi: {user_query}")
-    response = provider.generate(user_query, system_prompt=CHATBOT_BASELINE_PROMPT)
+    
+    vn_tz = timezone(timedelta(hours=7))
+    now = datetime.now(vn_tz)
+    weekdays_vn = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"]
+    time_str = now.strftime(f"%H:%M:%S, {weekdays_vn[now.weekday()]}, ngày %d/%m/%Y")
+    dynamic_prompt = CHATBOT_BASELINE_PROMPT + f"\n\n[THÔNG TIN]: Bây giờ là {time_str}."
+    
+    response = provider.generate(user_query, system_prompt=dynamic_prompt)
     print(f"🤖 Chatbot phản hồi:\n{response}")
 
 
@@ -72,13 +80,23 @@ def run_react_agent(user_query: str, provider, mcp_server: MCPVinBusServer, chat
     trace_logs = []
     tools_list = mcp_server.list_tools()
     
+    # ---------------------------------------------------------------------
+    # TIÊM THỜI GIAN THỰC TẾ (PROMPT INJECTION) ĐỂ LLM BIẾT GIỜ HIỆN TẠI
+    # ---------------------------------------------------------------------
+    vn_tz = timezone(timedelta(hours=7))
+    now = datetime.now(vn_tz)
+    weekdays_vn = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"]
+    time_str = now.strftime(f"%H:%M:%S, {weekdays_vn[now.weekday()]}, ngày %d/%m/%Y")
+    
+    dynamic_system_prompt = REACT_AGENT_SYSTEM_PROMPT + f"\n\n[THÔNG TIN HỆ THỐNG QUAN TRỌNG]\n- Thời gian hiện tại của hệ thống: {time_str}. BẮT BUỘC SỬ DỤNG MỐC THỜI GIAN NÀY làm chuẩn để tính toán giờ xe buýt tới bến (ETA), dự kiến thời gian di chuyển, và để trả lời nếu User hỏi giờ."
+    
     while step < MAX_ITERATIONS:
         step += 1
         step_start_time = time.time()
         print(f"\n--- 🔄 Vòng lặp ReAct Loop (Step {step}/{MAX_ITERATIONS}) ---")
         
         # Gọi LLM với Native Tool Calling Specs
-        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=REACT_AGENT_SYSTEM_PROMPT, chat_history=chat_history)
+        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=dynamic_system_prompt, chat_history=chat_history)
         latency_ms = round((time.time() - step_start_time) * 1000, 2)
         
         thought = llm_response.get("thought", "Đang suy luận...")
