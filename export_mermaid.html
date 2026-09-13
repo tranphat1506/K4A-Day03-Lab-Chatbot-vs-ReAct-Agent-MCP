@@ -61,13 +61,13 @@
         <div id="diag1" class="mermaid">
 flowchart TD
     subgraph Traditional["Chatbot Truyền Thống (RAG/Prompt)"]
-        A1[Người dùng hỏi: "Bao giờ xe buýt tới?"] --> B1[LLM tìm trong Database tĩnh]
+        A1[Người dùng hỏi: Bao giờ xe buýt tới?] --> B1[LLM tìm trong Database tĩnh]
         B1 --> C1[Không có dữ liệu thời gian thực]
         C1 --> D1[Trả lời thất bại / Hallucination]
     end
     
     subgraph ReAct["Trợ lý Thông minh VinBus (ReAct Agent)"]
-        A2[Người dùng hỏi: "Bao giờ xe buýt tới?"] --> B2[LLM nhận diện Yêu cầu]
+        A2[Người dùng hỏi: Bao giờ xe buýt tới?] --> B2[LLM nhận diện Yêu cầu]
         B2 --> C2[LLM kích hoạt Tool get_eta]
         C2 --> D2[Lấy Live Data từ hệ thống VinBus API]
         D2 --> E2[Trả lời chính xác: "Xe sắp tới trong 3 phút"]
