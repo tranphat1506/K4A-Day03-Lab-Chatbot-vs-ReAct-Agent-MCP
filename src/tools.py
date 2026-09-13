@@ -20,7 +20,7 @@ vinbus_client = VinbusClient(timeout=10)
 TOOLS_SCHEMA = [
     {
         "name": "geocoding_search",
-        "description": "Tìm kiếm toạ độ GPS của một địa chỉ hoặc địa điểm bằng văn bản.",
+        "description": "Tìm kiếm toạ độ GPS của một ĐỊA CHỈ hoặc ĐỊA ĐIỂM bằng văn bản. CHÚ Ý: CHỈ TRUYỀN TỪ KHÓA CHÍNH (ví dụ: 'Ngã tư Sở', 'Vinhomes Ocean Park'), TUYỆT ĐỐI KHÔNG truyền nguyên câu văn dài hoặc số tuyến xe (ví dụ: KHÔNG TRUYỀN 'Tìm tuyến xe 140 hcm').",
         "parameters": {
             "type": "object",
             "properties": {
@@ -138,6 +138,24 @@ TOOLS_SCHEMA = [
             },
             "required": ["region_code", "station_id", "route_id", "bus_id"]
         }
+    },
+    {
+        "name": "search_route",
+        "description": "Tìm kiếm thông tin tổng quan của một tuyến xe buýt (ví dụ: tìm tuyến 140, tuyến E03). Trả về ID tuyến, tên tuyến, giờ hoạt động, tần suất.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "region_code": {
+                    "type": "string",
+                    "description": "Mã khu vực (ví dụ: 'hn', 'hcm')"
+                },
+                "route_keyword": {
+                    "type": "string",
+                    "description": "Từ khóa tên tuyến hoặc số tuyến (ví dụ: '140', 'E03'). CHỈ TRUYỀN SỐ TUYẾN/TÊN TUYẾN, KHÔNG TRUYỀN NGUYÊN CÂU DÀI."
+                }
+            },
+            "required": ["region_code", "route_keyword"]
+        }
     }
 ]
 
@@ -216,6 +234,26 @@ def execute_get_eta(region_code: str, station_id: int) -> str:
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
+def execute_search_route(region_code: str, route_keyword: str) -> str:
+    """Thực thi tìm kiếm tuyến xe buýt"""
+    try:
+        raw_routes = vinbus_client._request("/client/route/list", params={"regionCode": region_code})
+        # Lọc các tuyến có chứa từ khóa
+        keyword = str(route_keyword).lower()
+        matched_routes = []
+        for r in raw_routes:
+            if keyword in str(r.get("routeNo", "")).lower() or keyword in str(r.get("routeName", "")).lower():
+                matched_routes.append({
+                    "routeId": r.get("routeId"),
+                    "routeNo": r.get("routeNo"),
+                    "routeName": r.get("routeName"),
+                    "operationTime": r.get("operationTime"),
+                    "headway": r.get("headway")
+                })
+        return json.dumps({"status": "SUCCESS", "data": matched_routes}, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
+
 def execute_get_bus_detail(region_code: str, station_id: int, route_id: int, bus_id: str) -> str:
     """Thực thi lấy chi tiết 1 xe buýt (bao gồm tọa độ GPS)"""
     try:
@@ -239,7 +277,8 @@ TOOL_ROUTER = {
     "get_station_detail": execute_get_station_detail,
     "get_eta": execute_get_eta,
     "get_directions": execute_get_directions,
-    "get_bus_detail_at_station": execute_get_bus_detail
+    "get_bus_detail_at_station": execute_get_bus_detail,
+    "search_route": execute_search_route
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
