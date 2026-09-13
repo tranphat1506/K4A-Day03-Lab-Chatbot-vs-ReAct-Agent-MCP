@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin } from 'react-icons/fi';
+import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin, FiChevronDown } from 'react-icons/fi';
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -7,7 +7,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [latestLogs, setLatestLogs] = useState([]);
   
-  // Location states
   const [location, setLocation] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState('');
@@ -18,7 +17,6 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Hàm lấy vị trí GPS từ trình duyệt
   const requestLocation = () => {
     setIsLocating(true);
     setLocationError('');
@@ -52,13 +50,11 @@ function App() {
     const userQuery = input;
     const currentHistory = [...messages];
     
-    // UI chỉ hiển thị câu hỏi của user
     setMessages([...currentHistory, { role: 'user', content: userQuery }]);
     setInput('');
     setLoading(true);
     setLatestLogs([]);
 
-    // Nếu có GPS, tự động đính kèm tọa độ vào prompt ngầm cho Backend AI
     let finalQuery = userQuery;
     if (location) {
       finalQuery += `\n(Ghi chú hệ thống: Tọa độ GPS hiện tại của người dùng là Latitude: ${location.lat}, Longitude: ${location.lng}. Nếu người dùng nói "từ chỗ tôi" hoặc "gần tôi", hãy dùng tọa độ này để tra cứu).`;
@@ -69,7 +65,7 @@ function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          query: finalQuery, // Gửi prompt đã nhúng GPS
+          query: finalQuery,
           history: currentHistory
         })
       });
@@ -104,7 +100,6 @@ function App() {
             </div>
           </div>
           
-          {/* Nút bật/tắt GPS trên Header */}
           <button 
             onClick={requestLocation}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-sm border ${
@@ -246,7 +241,7 @@ function App() {
         </div>
       </div>
 
-      {/* CỘT PHẢI: TRACE LOGS */}
+      {/* CỘT PHẢI: TRACE LOGS CÓ THỂ ĐÓNG MỞ (ACCORDION) */}
       <div className="hidden lg:flex w-1/3 bg-[#1e293b] flex-col text-slate-300">
         <div className="p-5 border-b border-slate-700/50 bg-[#0f172a] flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -280,24 +275,37 @@ function App() {
                   
                   <div className="space-y-4 text-[13px]">
                     <div>
-                      <span className="text-slate-500 text-xs block mb-1">Mục đích:</span>
+                      <span className="text-slate-500 text-xs block mb-1">Mục đích (Thought):</span>
                       <p className="text-slate-300 leading-relaxed">{log.thought}</p>
                     </div>
                     
                     {log.action_type === 'TOOL_EXECUTION' && (
                       <div className="space-y-3">
-                        <div className="bg-[#0f172a] rounded-md p-3 border border-slate-700/50">
-                          <span className="text-slate-500 text-xs block mb-1">Dữ liệu gửi đi (Input):</span>
-                          <div className="text-emerald-300/80 font-mono text-xs overflow-x-auto">
-                            {JSON.stringify(log.arguments)}
+                        {/* Collapsible Input JSON */}
+                        <details className="bg-[#0f172a] rounded-md border border-slate-700/50 group cursor-pointer [&_summary::-webkit-details-marker]:hidden">
+                          <summary className="text-slate-400 hover:text-slate-200 text-xs p-3 font-medium flex justify-between items-center transition-colors">
+                            <span>Dữ liệu gửi đi (Input)</span>
+                            <FiChevronDown className="transform group-open:rotate-180 transition-transform duration-200" />
+                          </summary>
+                          <div className="p-3 pt-0 border-t border-slate-700/50 mt-1 cursor-text">
+                            <pre className="text-emerald-300/80 font-mono text-xs overflow-x-auto whitespace-pre-wrap break-all">
+                              {JSON.stringify(log.arguments, null, 2)}
+                            </pre>
                           </div>
-                        </div>
-                        <div className="bg-[#0f172a] rounded-md p-3 border border-slate-700/50">
-                          <span className="text-slate-500 text-xs block mb-1">Dữ liệu nhận về (Output):</span>
-                          <div className="text-yellow-300/80 font-mono text-xs overflow-x-auto max-h-32">
-                            {JSON.stringify(log.observation)}
+                        </details>
+
+                        {/* Collapsible Output JSON */}
+                        <details className="bg-[#0f172a] rounded-md border border-slate-700/50 group cursor-pointer [&_summary::-webkit-details-marker]:hidden">
+                          <summary className="text-slate-400 hover:text-slate-200 text-xs p-3 font-medium flex justify-between items-center transition-colors">
+                            <span>Dữ liệu nhận về (Observation)</span>
+                            <FiChevronDown className="transform group-open:rotate-180 transition-transform duration-200" />
+                          </summary>
+                          <div className="p-3 pt-0 border-t border-slate-700/50 mt-1 cursor-text">
+                            <pre className="text-yellow-300/80 font-mono text-xs overflow-x-auto max-h-64 whitespace-pre-wrap break-all custom-scrollbar">
+                              {JSON.stringify(log.observation, null, 2)}
+                            </pre>
                           </div>
-                        </div>
+                        </details>
                       </div>
                     )}
                   </div>
