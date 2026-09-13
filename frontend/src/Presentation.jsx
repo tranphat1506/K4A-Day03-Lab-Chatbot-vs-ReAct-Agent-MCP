@@ -38,12 +38,12 @@ const SLIDES = [
                 <FiMessageSquare className="text-gray-500 mb-2" size={24} />
                 <p className="font-medium">User: "Bao giờ xe buýt tới?"</p>
               </div>
-              <div className="text-gray-400 my-2"><FiArrowDown size={24} /></div>
+              <div className="flex justify-center text-gray-400 my-2 w-full"><FiArrowDown size={24} /></div>
               <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <FiDatabase className="text-blue-500 mb-2" size={24} />
                 <p className="font-medium">Tìm kiếm trong Database tĩnh (PDF, Text)</p>
               </div>
-              <div className="text-gray-400 my-2"><FiArrowDown size={24} /></div>
+              <div className="flex justify-center text-gray-400 my-2 w-full"><FiArrowDown size={24} /></div>
               <div className="flex flex-col items-center p-4 bg-red-50 rounded-lg border border-red-200">
                 <FiAlertTriangle className="text-red-500 mb-2" size={24} />
                 <p className="font-bold text-red-700">Thất bại / Hallucination</p>
