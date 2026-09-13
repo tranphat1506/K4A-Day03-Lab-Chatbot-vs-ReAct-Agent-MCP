@@ -1,0 +1,187 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiArrowLeft, FiClock, FiMapPin, FiNavigation, FiTrash2, FiBell, FiAlertCircle } from 'react-icons/fi';
+
+export default function PlansManager() {
+  const navigate = useNavigate();
+  const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [liveData, setLiveData] = useState(null);
+
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('vinbus_plans') || '[]');
+    setPlans(stored);
+  }, []);
+
+  // Poll ETA cho plan đang được chọn xem chi tiết
+  useEffect(() => {
+    let timeoutId;
+    let isMounted = true;
+
+    const fetchEta = async () => {
+      if (!selectedPlan) return;
+      try {
+        const res = await fetch(`http://localhost:8000/api/eta?region_code=${selectedPlan.regionCode}&station_id=${selectedPlan.boardingStationId}&walk_time_mins=${selectedPlan.walkTimeMins}`);
+        const data = await res.json();
+        if (data.status === "SUCCESS" && isMounted) {
+          setLiveData(data.data);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      if (isMounted) {
+        timeoutId = setTimeout(fetchEta, 15000); // 15s refresh on detail page
+      }
+    };
+
+    if (selectedPlan) {
+      setLiveData(null);
+      fetchEta();
+    }
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutId);
+    };
+  }, [selectedPlan]);
+
+  const handleDelete = (id, e) => {
+    if (e) e.stopPropagation();
+    const newPlans = plans.filter(p => p.id !== id);
+    localStorage.setItem('vinbus_plans', JSON.stringify(newPlans));
+    setPlans(newPlans);
+    if (selectedPlan?.id === id) setSelectedPlan(null);
+    window.dispatchEvent(new Event('vinbus_plan_updated'));
+  };
+
+  return (
+    <div className="flex h-screen bg-slate-50 font-sans text-slate-800">
+      {/* Sidebar Danh sách Plan */}
+      <div className="w-full md:w-1/3 border-r border-gray-200 bg-white flex flex-col">
+        <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+          <button onClick={() => navigate('/chat')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <FiArrowLeft size={20} />
+          </button>
+          <h1 className="font-bold text-lg text-emerald-800">Kế Hoạch Của Tôi</h1>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {plans.length === 0 ? (
+            <div className="text-center text-gray-500 mt-10">
+              <p>Chưa có kế hoạch nào.</p>
+              <button onClick={() => navigate('/chat')} className="mt-4 text-emerald-600 font-medium hover:underline">Quay lại Chat để lập kế hoạch</button>
+            </div>
+          ) : (
+            plans.map(plan => (
+              <div 
+                key={plan.id}
+                onClick={() => setSelectedPlan(plan)}
+                className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                  selectedPlan?.id === plan.id 
+                    ? 'border-emerald-500 bg-emerald-50 shadow-sm' 
+                    : 'border-gray-100 bg-white hover:border-emerald-300'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs font-bold">Tuyến {plan.routeNo}</span>
+                  <button onClick={(e) => handleDelete(plan.id, e)} className="text-gray-400 hover:text-red-500">
+                    <FiTrash2 size={16} />
+                  </button>
+                </div>
+                <div className="text-sm text-gray-600 flex items-center gap-2 mt-2">
+                  <FiMapPin className="text-gray-400" /> Trạm đón: {plan.boardingStationId}
+                </div>
+                <div className="text-sm text-gray-600 flex items-center gap-2 mt-1">
+                  <FiNavigation className="text-gray-400" /> Đi bộ: {plan.walkTimeMins} phút
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Main Content Chi tiết Plan */}
+      <div className="hidden md:flex flex-1 flex-col bg-slate-50">
+        {selectedPlan ? (
+          <div className="p-8 h-full overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 max-w-2xl mx-auto">
+              <div className="flex justify-between items-center mb-6 pb-6 border-b border-gray-100">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">Chi Tiết Lộ Trình</h2>
+                  <p className="text-emerald-600 font-medium flex items-center gap-2 mt-1">
+                    <FiBell /> Đang theo dõi tự động
+                  </p>
+                </div>
+                <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center">
+                  <span className="font-black text-2xl text-emerald-700">{selectedPlan.routeNo}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="bg-slate-50 p-4 rounded-xl">
+                  <span className="text-xs text-gray-500 font-semibold uppercase">Mã Trạm Đón</span>
+                  <p className="text-lg font-bold text-gray-800 mt-1">{selectedPlan.boardingStationId}</p>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-xl">
+                  <span className="text-xs text-gray-500 font-semibold uppercase">Thời Gian Đi Bộ</span>
+                  <p className="text-lg font-bold text-gray-800 mt-1">{selectedPlan.walkTimeMins} phút</p>
+                </div>
+              </div>
+
+              <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
+                <FiClock className="text-emerald-500" /> Xe Sắp Tới (Real-time)
+              </h3>
+              
+              <div className="space-y-3">
+                {!liveData ? (
+                  <div className="p-4 bg-gray-50 rounded-xl text-center text-gray-500 animate-pulse">Đang cập nhật vệ tinh...</div>
+                ) : (
+                  (() => {
+                    let found = false;
+                    const routesUI = liveData.map((route, r_idx) => {
+                      if (route.routeNo === selectedPlan.routeNo) {
+                        found = true;
+                        if (!route.list || route.list.length === 0) {
+                          return <div key={r_idx} className="p-4 bg-orange-50 text-orange-700 rounded-xl flex items-center gap-3"><FiAlertCircle /> Không có xe nào khả dụng (có thể xe đã đi qua hoặc chưa xuất bến).</div>;
+                        }
+                        return route.list.map((bus, b_idx) => {
+                          const eta = Math.ceil(bus.time / 60);
+                          const isCatchable = eta >= selectedPlan.walkTimeMins + 2;
+                          return (
+                            <div key={`${r_idx}-${b_idx}`} className={`p-4 rounded-xl flex justify-between items-center ${isCatchable ? 'bg-emerald-50 border border-emerald-100' : 'bg-red-50 border border-red-100'}`}>
+                              <div>
+                                <p className="font-bold text-gray-800">Biển số: {bus.vehicleNumber || bus.busId}</p>
+                                <p className="text-sm text-gray-600">Khoảng cách: {(bus.distance/1000).toFixed(1)} km</p>
+                              </div>
+                              <div className="text-right">
+                                <p className={`text-2xl font-black ${isCatchable ? 'text-emerald-600' : 'text-red-500'}`}>{eta} <span className="text-base font-normal">phút</span></p>
+                                {!isCatchable && <p className="text-xs text-red-500 mt-1 font-medium">Không kịp đón!</p>}
+                              </div>
+                            </div>
+                          );
+                        });
+                      }
+                      return null;
+                    });
+                    
+                    if (!found) return <div className="p-4 bg-gray-50 rounded-xl text-center text-gray-500">Tuyến xe này hiện không hoạt động.</div>;
+                    return routesUI;
+                  })()
+                )}
+              </div>
+              
+              <div className="mt-8 pt-6 border-t border-gray-100 text-center">
+                <button onClick={() => handleDelete(selectedPlan.id)} className="text-red-500 font-medium hover:underline text-sm">Hủy bỏ kế hoạch này</button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-full items-center justify-center text-gray-400 flex-col gap-4">
+            <FiMapPin size={48} className="opacity-20" />
+            <p>Chọn một kế hoạch bên trái để xem chi tiết</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

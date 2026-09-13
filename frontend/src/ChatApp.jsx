@@ -2,12 +2,14 @@ import ReactMarkdown from 'react-markdown';
 import { ProposedPlanCard, GlobalTracker } from './components/TripPlanner';
 import MapCard from './components/MapCard';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin, FiChevronDown } from 'react-icons/fi';
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [latestLogs, setLatestLogs] = useState([]);
   const [activeTrackers, setActiveTrackers] = useState([]);
   
@@ -171,6 +173,14 @@ function App() {
             </div>
           </div>
           
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/plans')}
+              className="hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold hover:bg-emerald-200 transition-colors shadow-sm"
+            >
+              <FiClock /> Quản lý lộ trình
+            </button>
+          
           <button 
             onClick={requestLocation}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all shadow-sm border ${
@@ -192,6 +202,7 @@ function App() {
               </>
             )}
           </button>
+          </div>
         </div>
 
         {/* Khung Chat */}
