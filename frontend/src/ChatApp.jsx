@@ -189,7 +189,7 @@ function App() {
                     ? 'bg-emerald-600 text-white' 
                     : 'bg-white border border-gray-100 text-gray-800'
                 }`}>
-                  <div className="whitespace-pre-wrap markdown-body">
+                  <div className="markdown-body text-sm">
                     <ReactMarkdown
                       components={{
                         strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
