@@ -115,7 +115,7 @@ TOOLS_SCHEMA = [
     },
     {
         "name": "get_bus_detail_at_station",
-        "description": "Lấy tọa độ GPS (kinh độ, vĩ độ) hiện tại và trạng thái chi tiết của một chiếc xe buýt cụ thể đang chạy trên tuyến.",
+        "description": "Lấy tọa độ GPS (kinh độ, vĩ độ) hiện tại. route_id và station_id có thể lấy từ kết quả của get_eta (dùng routeId và currentStationId). bus_id là mã xe busId (ví dụ 50E21494).",
         "parameters": {
             "type": "object",
             "properties": {
@@ -197,12 +197,15 @@ def execute_get_eta(region_code: str, station_id: int) -> str:
             live_vehicles = []
             for vehicle in route_eta.get("list", []):
                 live_vehicles.append({
+                    "busId": vehicle.get("busId"),
                     "vehicleNumber": vehicle.get("vehicleNumber"),
                     "distance_meters": vehicle.get("distance"),
-                    "eta_seconds": vehicle.get("time")
+                    "eta_seconds": vehicle.get("time"),
+                    "currentStationId": vehicle.get("currentStationId")
                 })
             
             filtered_eta.append({
+                "routeId": route_eta.get("routeId"),
                 "routeNo": route_eta.get("routeNo"),
                 "routeName": route_eta.get("routeName"),
                 "headway": route_eta.get("headway"),
