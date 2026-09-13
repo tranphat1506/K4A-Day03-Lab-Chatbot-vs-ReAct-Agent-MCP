@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   FiPlay, FiMonitor, FiMapPin, FiNavigation, FiMap, FiInfo, FiClock, FiSettings,
   FiMessageSquare, FiDatabase, FiAlertTriangle, FiCheckCircle,
-  FiCpu, FiGitBranch, FiTarget, FiBox, FiServer, FiGlobe, FiArrowDown, FiArrowRight
+  FiCpu, FiGitBranch, FiTarget, FiBox, FiServer, FiGlobe, FiArrowDown, FiArrowRight, FiGithub
 } from 'react-icons/fi';
 
 export default function Presentation() {
@@ -268,6 +268,24 @@ export default function Presentation() {
           <FiPlay size={20} /> Bắt đầu Demo Trực Tiếp
         </button>
       </section>
+
+      {/* FOOTER & CREDITS */}
+      <footer className="py-8 px-4 bg-gray-50 border-t border-gray-200 text-center">
+        <div className="flex flex-col items-center justify-center gap-4">
+          <a 
+            href="https://github.com/tranphat1506" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors font-medium"
+          >
+            <FiGithub size={20} />
+            <span>@tranphat1506</span>
+          </a>
+          <p className="text-sm text-gray-400">
+            Open-source Project • VinUni AI Course K4A
+          </p>
+        </div>
+      </footer>
 
     </div>
   );
