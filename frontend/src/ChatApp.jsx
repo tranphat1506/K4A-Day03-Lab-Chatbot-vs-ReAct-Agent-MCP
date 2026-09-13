@@ -31,6 +31,17 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Tự động lấy GPS nếu đã có quyền
+  useEffect(() => {
+    if (navigator.permissions && navigator.permissions.query) {
+      navigator.permissions.query({ name: 'geolocation' }).then(result => {
+        if (result.state === 'granted') {
+          requestLocation();
+        }
+      });
+    }
+  }, []);
+
   const requestLocation = () => {
     setIsLocating(true);
     setLocationError('');
