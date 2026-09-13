@@ -176,8 +176,8 @@ TOOLS_SCHEMA = [
         }
     },
     {
-        "name": "create_jit_tracker",
-        "description": "Tạo một thẻ theo dõi thời gian thực (JIT Tracker) để liên tục giám sát xe buýt sắp tới và báo động cho người dùng khi đến giờ đi bộ ra bến.",
+        "name": "propose_trip_plan",
+        "description": "Đề xuất một kế hoạch chuyến đi (Trip Plan) cho người dùng xác nhận. (JIT Tracker) để liên tục giám sát xe buýt sắp tới và báo động cho người dùng khi đến giờ đi bộ ra bến.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -364,7 +364,8 @@ TOOL_ROUTER = {
     "get_directions": execute_get_directions,
     "get_bus_detail_at_station": execute_get_bus_detail,
     "search_route": execute_search_route,
-    "get_route_stations": execute_get_route_stations
+    "get_route_stations": execute_get_route_stations,
+    "propose_trip_plan": execute_propose_trip_plan
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
@@ -376,9 +377,8 @@ def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
             return json.dumps({"status": "EXECUTION_ERROR", "error": str(e)}, ensure_ascii=False)
     return json.dumps({"status": "UNKNOWN_TOOL", "error": f"Tool '{tool_name}' không tồn tại!"}, ensure_ascii=False)
 
-def execute_create_jit_tracker(params: Dict[str, Any]) -> Dict[str, Any]:
-    # Thực tế Backend không cần làm gì, chỉ trả về thành công để Frontend bắt được tín hiệu và mount UI
-    return {
+def execute_propose_trip_plan(**kwargs) -> str:
+    return json.dumps({
         "status": "SUCCESS",
-        "message": f"Đã khởi tạo JIT Tracker cho tuyến {params.get('route_no')} tại trạm {params.get('boarding_station_id')}."
-    }
+        "message": f"Đã đề xuất kế hoạch cho tuyến {kwargs.get('route_no')} tại trạm {kwargs.get('boarding_station_id')}."
+    }, ensure_ascii=False)

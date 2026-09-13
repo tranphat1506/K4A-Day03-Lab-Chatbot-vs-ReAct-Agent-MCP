@@ -152,3 +152,13 @@ async def websocket_tracker(websocket: WebSocket):
         print("Client ngắt kết nối JIT Tracker.")
     except Exception as e:
         print("Lỗi WebSocket:", e)
+
+from fastapi import Query
+@app.get("/api/eta")
+def get_eta_api(region_code: str, station_id: int):
+    client = VinbusClient(timeout=10)
+    try:
+        etas = client.get_eta(region_code, station_id, 1, 0)
+        return {"status": "SUCCESS", "data": etas}
+    except Exception as e:
+        return {"status": "ERROR", "message": str(e)}

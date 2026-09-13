@@ -1,5 +1,5 @@
 import ReactMarkdown from 'react-markdown';
-import JitTrackerCard from './components/JitTrackerCard';
+import { ProposedPlanCard, GlobalTracker } from './components/TripPlanner';
 import { useState, useRef, useEffect } from 'react';
 import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin, FiChevronDown } from 'react-icons/fi';
 
@@ -106,17 +106,13 @@ function App() {
                 
                 logs = [...logs, logData];
                 
-                // Kích hoạt Tracker nếu tool được gọi
-                if (logData.action_type === "TOOL_EXECUTION" && logData.tool_name === "create_jit_tracker") {
-                  setActiveTrackers(prev => {
-                    const newTracker = {
-                      regionCode: logData.arguments.region_code,
-                      boardingStationId: logData.arguments.boarding_station_id,
-                      routeNo: logData.arguments.route_no,
-                      walkTimeMins: logData.arguments.walk_time_mins || 5
-                    };
-                    return [...prev, newTracker];
-                  });
+                if (logData.action_type === "TOOL_EXECUTION" && logData.tool_name === "propose_trip_plan") {
+                  // We inject a special message type to render the card inline
+                  setMessages(prev => [...prev, { 
+                    role: 'assistant', 
+                    type: 'trip_plan',
+                    content: logData.arguments
+                  }]);
                 }
                 setLatestLogs(logs);
 
@@ -285,14 +281,7 @@ function App() {
           </div>
         </div>
 
-        {/* Khu vực hiển thị JIT Trackers */}
-        <div className="absolute bottom-24 right-5 md:right-1/3 flex flex-col gap-2 z-50 pointer-events-none">
-          {activeTrackers.map((tracker, index) => (
-            <div key={index} className="pointer-events-auto">
-              <JitTrackerCard {...tracker} />
-            </div>
-          ))}
-        </div>
+        
         
         {/* Khung Nhập Liệu */}
         <div className="p-5 bg-white border-t border-gray-100">
