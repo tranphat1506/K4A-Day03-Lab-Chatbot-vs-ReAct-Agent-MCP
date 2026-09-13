@@ -209,8 +209,29 @@ TOOLS_SCHEMA = [
 
 def execute_geocoding_search(region_code: str, content: str) -> str:
     """Thực thi tìm kiếm tọa độ từ địa chỉ"""
+    import re
     try:
         result = vinbus_client.geocoding_search(region_code, content)
+        
+        # Tự động retry nếu kết quả rỗng bằng cách xóa các từ rườm rà
+        if not result:
+            # Loại bỏ các từ khóa chung chung thường làm hỏng tìm kiếm
+            prefixes_to_remove = ["nhà", "số", "đường", "tòa nhà", "tòa", "chung cư", "ngõ", "hẻm", "phân khu", "khu", "quận", "huyện", "phường", "xã"]
+            
+            simplified = content.lower()
+            for prefix in prefixes_to_remove:
+                # Xóa từ ở đầu câu hoặc đứng độc lập
+                simplified = re.sub(r'\b' + prefix + r'\b', '', simplified)
+                
+            simplified = simplified.strip()
+            
+            # Chỉ retry nếu chuỗi sau khi rút gọn khác với ban đầu và không rỗng
+            if simplified and simplified != content.lower():
+                print(f"[Auto-Retry Geocoding] '{content}' -> '{simplified}'")
+                retry_result = vinbus_client.geocoding_search(region_code, simplified)
+                if retry_result:
+                    return json.dumps({"status": "SUCCESS", "data": retry_result, "note": f"Auto-retried with simplified keyword: {simplified}"}, ensure_ascii=False)
+
         return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
