@@ -24,7 +24,7 @@
     "id": "TC04",
     "type": "multi_step_reasoning",
     "question": "Sắp tới 8h30 sáng tôi phải có mặt ở VinUni. Tôi đang ở ngã tư Sở. Tôi nên đi tuyến nào và bao giờ phải ra bến?",
-    "expected_behavior": "Agent thực hiện chuỗi ReAct: Geocode ngã tư Sở -> Tìm trạm đi -> Geocode VinUni -> Tìm trạm đến -> Tìm tuyến phù hợp -> Tính ETA và thời gian đi bộ.",
+    "expected_behavior": "Agent gọi geocoding_search cho cả 2 điểm, sau đó gọi get_directions, chọn lộ trình tối ưu và tính giờ ra bến.",
     "complexity": "High"
   },
   {

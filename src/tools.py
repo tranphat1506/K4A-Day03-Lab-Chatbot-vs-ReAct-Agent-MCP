@@ -63,6 +63,21 @@ TOOLS_SCHEMA = [
         }
     },
     {
+        "name": "get_directions",
+        "description": "Tìm lộ trình xe buýt tối ưu từ điểm A đến điểm B. Trả về nhiều gợi ý lộ trình, bao gồm thời gian đi, số trạm đi qua, và các tuyến xe.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "start_lat": {"type": "number", "description": "Vĩ độ điểm đi"},
+                "start_lng": {"type": "number", "description": "Kinh độ điểm đi"},
+                "end_lat": {"type": "number", "description": "Vĩ độ điểm đến"},
+                "end_lng": {"type": "number", "description": "Kinh độ điểm đến"},
+                "region_code": {"type": "string", "description": "Mã khu vực (ví dụ: 'hn')"}
+            },
+            "required": ["start_lat", "start_lng", "end_lat", "end_lng", "region_code"]
+        }
+    },
+    {
         "name": "get_station_detail",
         "description": "Lấy thông tin chi tiết của một trạm xe buýt và các tuyến xe đi qua trạm đó.",
         "parameters": {
@@ -136,12 +151,21 @@ def execute_get_eta(region_code: str, station_id: int) -> str:
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
+def execute_get_directions(start_lat: float, start_lng: float, end_lat: float, end_lng: float, region_code: str) -> str:
+    """Tìm lộ trình chỉ đường tối ưu (multimodal)."""
+    try:
+        result = vinbus_client.get_directions(start_lat, start_lng, end_lat, end_lng, region_code)
+        return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
+
 # Router gọi tool thực tế
 TOOL_ROUTER = {
     "geocoding_search": execute_geocoding_search,
     "get_near_stations": execute_get_near_stations,
     "get_station_detail": execute_get_station_detail,
-    "get_eta": execute_get_eta
+    "get_eta": execute_get_eta,
+    "get_directions": execute_get_directions
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
