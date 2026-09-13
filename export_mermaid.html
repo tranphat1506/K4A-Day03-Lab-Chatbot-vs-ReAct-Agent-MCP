@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VinBus Mermaid Diagrams Export</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+        
+        window.downloadSvgAsPng = function(svgId, filename) {
+            const svgElement = document.querySelector(`#${svgId} svg`);
+            if (!svgElement) return;
+
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const canvas = document.createElement("canvas");
+            
+            // Lấy kích thước thực tế của SVG
+            const bbox = svgElement.getBoundingClientRect();
+            canvas.width = bbox.width * 2; // Tăng gấp đôi độ phân giải cho nét
+            canvas.height = bbox.height * 2;
+
+            const ctx = canvas.getContext("2d");
+            
+            // Vẽ nền trắng (vì PNG mặc định trong suốt)
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const pngFile = canvas.toDataURL("image/png");
+                
+                const downloadLink = document.createElement("a");
+                downloadLink.download = filename + ".png";
+                downloadLink.href = `${pngFile}`;
+                downloadLink.click();
+            };
+            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+        };
+    </script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .diagram-container { background: white; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .btn { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        .btn:hover { background: #059669; }
+        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Trình xuất ảnh (Export) Biểu đồ Mermaid cho Demo Day</h1>
+    <p>Bấm nút <strong>Tải ảnh PNG</strong> để tải từng biểu đồ về máy nét căng, nền trắng chuẩn để cho vào Slide.</p>
+
+    <div class="diagram-container">
+        <h2>1. Kiến trúc Hệ thống (System Architecture)</h2>
+        <button class="btn" onclick="downloadSvgAsPng('diag1', '1_system_architecture')">⬇️ Tải ảnh PNG</button>
+        <div id="diag1" class="mermaid">
+flowchart LR
+    A[Client UI \n(Vite + React)] <-->|REST API| B[Backend Server \n(Python FastAPI)]
+    B <-->|Chat History & Prompt| C{ReAct Agent \n(Gemini/OpenAI)}
+    C <-->|Tool Call| D[MCP Server \n(Python)]
+    D <-->|HTTP| E[(VinBus API)]
+    
+    style A fill:#10b981,stroke:#047857,color:white
+    style B fill:#3b82f6,stroke:#1d4ed8,color:white
+    style C fill:#8b5cf6,stroke:#6d28d9,color:white
+    style D fill:#f59e0b,stroke:#b45309,color:white
+    style E fill:#ef4444,stroke:#b91c1c,color:white
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>2. UX Tự động xin quyền GPS (Magic UX Flow)</h2>
+        <button class="btn" onclick="downloadSvgAsPng('diag2', '2_magic_ux_flow')">⬇️ Tải ảnh PNG</button>
+        <div id="diag2" class="mermaid">
+sequenceDiagram
+    actor User as Khách hàng
+    participant React as Frontend (React)
+    participant Agent as ReAct Agent
+    
+    User->>React: Tìm xe buýt gần tôi nhất
+    React->>Agent: Send Query
+    Note over Agent: Agent phân tích thấy thiếu vị trí<br/>nhưng biết có thể nhờ Frontend lấy GPS.
+    Agent-->>React: Response: Bạn cho mình xin vị trí nhé? [REQUEST_LOCATION]
+    Note over React: 1. FE ẩn thẻ [REQUEST_LOCATION] đi<br/>2. FE tự động kích hoạt API Trình duyệt
+    React->>User: Hiển thị Popup: Allow Location Access?
+    User-->>React: Click Cho phép
+    Note over React: Lấy được GPS: Lat: 21.0, Lng: 105.8
+    React->>Agent: Tự động đính kèm GPS vào lượt chat tiếp theo!
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>3. Vòng lặp Suy luận đa bước (ReAct Loop)</h2>
+        <button class="btn" onclick="downloadSvgAsPng('diag3', '3_react_loop')">⬇️ Tải ảnh PNG</button>
+        <div id="diag3" class="mermaid">
+sequenceDiagram
+    participant A as ReAct Agent (LLM)
+    participant M as MCP Server
+    participant V as VinBus API
+    
+    rect rgb(240, 248, 255)
+    Note over A,V: Bắt đầu Vòng lặp ReAct Loop (Tối đa 10 steps)
+    
+    A->>A: THOUGHT 1: Cần tìm tọa độ 2 địa điểm
+    A->>M: ACTION 1: Gọi geocoding_search
+    M->>V: HTTP GET /api/search
+    V-->>M: Trả về [lat, lng]
+    M-->>A: OBSERVATION 1: Tọa độ Ngã Tư Sở & VinUni
+    
+    A->>A: THOUGHT 2: Cần tìm tuyến đường nối 2 tọa độ
+    A->>M: ACTION 2: Gọi get_directions
+    M->>V: HTTP GET /api/navigation
+    V-->>M: Trả về tuyến E01
+    M-->>A: OBSERVATION 2: Đi tuyến E01
+    
+    A->>A: THOUGHT 3: Cần xem mấy phút nữa xe E01 tới
+    A->>M: ACTION 3: Gọi get_eta
+    M->>V: HTTP GET /api/eta
+    V-->>M: Trả về time, distance
+    M-->>A: OBSERVATION 3: Xe sắp tới trong 3 phút
+    
+    end
+        </div>
+    </div>
+</body>
+</html>
