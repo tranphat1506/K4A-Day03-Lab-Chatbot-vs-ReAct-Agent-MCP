@@ -14,11 +14,11 @@ if sys.stdout.encoding != 'utf-8':
     except Exception:
         pass
 
-class MCPAcademicServer:
+class MCPVinBusServer:
     """
     Giả lập MCP Server tuân thủ chuẩn giao thức Model Context Protocol
     """
-    def __init__(self, server_name: str = "vinuni-academic-mcp-server"):
+    def __init__(self, server_name: str = "vinbus-mcp-server"):
         self.server_name = server_name
         self.version = "2026.1.0"
         
@@ -42,10 +42,10 @@ class MCPAcademicServer:
 
 if __name__ == "__main__":
     print("==========================================================")
-    print("🔌 KIỂM THỬ ĐỘC LẬP MCP SERVER (vinuni-academic-mcp-server)")
+    print("🔌 KIỂM THỬ ĐỘC LẬP MCP SERVER (vinbus-mcp-server)")
     print("==========================================================")
     
-    server = MCPAcademicServer()
+    server = MCPVinBusServer()
     tools = server.list_tools()
     print(f"✅ Khởi tạo thành công MCP Server: {server.server_name} (Version: {server.version})")
     print(f"📦 Số lượng Tools công bố: {len(tools)}")

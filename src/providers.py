@@ -32,31 +32,38 @@ class MockOfflineProvider(BaseLLMProvider):
         self.model_name = "Offline-Mock-Model-2026"
 
     def generate(self, prompt: str, system_prompt: str = "") -> str:
-        return f"[Mock Chatbot Response]: Xin chào! Tôi đã nhận được câu hỏi '{prompt}'. (Chế độ Chatbot không có Tool tra cứu dữ liệu thời gian thực)."
+        return f"[Mock VinBus Agent]: Xin chào! Tôi đã nhận được câu hỏi '{prompt}'. (Chế độ Mock Offline không thể gọi API thật)."
 
     def generate_with_tools(self, prompt: str, tools_schema: List[Dict[str, Any]], system_prompt: str = "") -> Dict[str, Any]:
         prompt_lower = prompt.lower()
         
         # Mô phỏng nhận diện intent gọi Tool
-        if "sv2026001" in prompt_lower and "đặt lịch" in prompt_lower:
+        if "vinuni" in prompt_lower or "1234" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "schedule_appointment",
-                "arguments": {"student_id": "SV2026001", "datetime_str": "14:00 15/09/2026", "advisor_name": "PGS.TS Nguyễn Văn A"},
-                "thought": "Người dùng yêu cầu đặt lịch hẹn tư vấn cho sinh viên SV2026001. Tôi sẽ gọi tool schedule_appointment."
+                "tool_name": "get_station_detail",
+                "arguments": {"station_id": 1234, "region_code": "hn"},
+                "thought": "Người dùng muốn tra cứu thông tin trạm xe buýt VinUni. Tôi sẽ gọi tool get_station_detail."
             }
-        elif "sv2026001" in prompt_lower or "tra cứu" in prompt_lower:
+        elif "ngã tư sở" in prompt_lower or "s2.05" in prompt_lower or "phố biển 19" in prompt_lower:
             return {
                 "type": "tool_call",
-                "tool_name": "academic_query",
-                "arguments": {"student_id": "SV2026001"},
-                "thought": "Người dùng muốn tra cứu thông tin học vụ của sinh viên SV2026001. Tôi sẽ gọi tool academic_query."
+                "tool_name": "geocoding_search",
+                "arguments": {"region_code": "hn", "content": "Ngã tư Sở"},
+                "thought": "Người dùng cung cấp địa danh, tôi cần gọi geocoding_search để lấy toạ độ."
+            }
+        elif "999999" in prompt_lower:
+            return {
+                "type": "tool_call",
+                "tool_name": "get_eta",
+                "arguments": {"station_id": 999999, "region_code": "hn"},
+                "thought": "Tra cứu ETA cho trạm 999999."
             }
         else:
             return {
                 "type": "text",
-                "content": f"[Mock Agent Response]: Xin chào! Quy chế học vụ VinUni yêu cầu sinh viên tích lũy tối thiểu 120 tín chỉ và duy trì GPA trên 2.0 để tốt nghiệp.",
-                "thought": "Câu hỏi chung về quy chế học vụ, trả lời trực tiếp không cần gọi Tool."
+                "content": f"[Mock VinBus Agent]: Chào bạn! Hệ thống xe buýt điện VinBus (Mock) hiện tại đang chạy mượt mà. Vui lòng cung cấp mã trạm hoặc tên địa điểm để tôi tra cứu nhé.",
+                "thought": "Câu hỏi chung chung, trả lời trực tiếp."
             }
 
 
