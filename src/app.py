@@ -233,3 +233,87 @@ if __name__ == "__main__":
         logs = run_react_agent(sample_query, provider, mcp_server)
         save_waterfall_trace(logs)
         print("\n💡 Hãy thử ngay lệnh: python src/app.py --interactive để chat trực tiếp!")
+
+
+def run_react_agent_stream(user_query: str, provider, mcp_server: MCPVinBusServer, chat_history: list = None) -> list:
+    """
+    [REACT AGENT LOOP] Thực thi vòng lặp Thought -> Action -> Observation với MCP Server
+    Trả về danh sách trace log của phiên thực thi.
+    """
+    print(f"\n🤖 [REACT AGENT] Câu hỏi: {user_query}")
+    
+    step = 0
+    tools_list = mcp_server.list_tools()
+    
+    # ---------------------------------------------------------------------
+    # TIÊM THỜI GIAN THỰC TẾ (PROMPT INJECTION) ĐỂ LLM BIẾT GIỜ HIỆN TẠI
+    # ---------------------------------------------------------------------
+    vn_tz = timezone(timedelta(hours=7))
+    now = datetime.now(vn_tz)
+    weekdays_vn = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"]
+    time_str = now.strftime(f"%H:%M:%S, {weekdays_vn[now.weekday()]}, ngày %d/%m/%Y")
+    
+    dynamic_system_prompt = REACT_AGENT_SYSTEM_PROMPT + f"\n\n[THÔNG TIN HỆ THỐNG QUAN TRỌNG]\n- Thời gian hiện tại của hệ thống: {time_str}. BẮT BUỘC SỬ DỤNG MỐC THỜI GIAN NÀY làm chuẩn để tính toán giờ xe buýt tới bến (ETA), dự kiến thời gian di chuyển, và để trả lời nếu User hỏi giờ."
+    
+    while step < MAX_ITERATIONS:
+        step += 1
+        step_start_time = time.time()
+        print(f"\n--- 🔄 Vòng lặp ReAct Loop (Step {step}/{MAX_ITERATIONS}) ---")
+        
+        # Gọi LLM với Native Tool Calling Specs
+        llm_response = provider.generate_with_tools(user_query, tools_list, system_prompt=dynamic_system_prompt, chat_history=chat_history)
+        latency_ms = round((time.time() - step_start_time) * 1000, 2)
+        
+        thought = llm_response.get("thought", "Đang suy luận...")
+        print(f"🧠 [Thought]: {thought}")
+        
+        # Trường hợp 1: LLM quyết định trả lời bằng văn bản trực tiếp
+        if llm_response.get("type") == "text":
+            final_content = llm_response.get("content", "")
+            print(f"🏁 [Final Answer]: {final_content}")
+            yield {
+                "step": step,
+                "query": user_query,
+                "action_type": "FINAL_ANSWER",
+                "thought": thought,
+                "output": final_content,
+                "latency_ms": latency_ms
+            }
+            break
+            
+        # Trường hợp 2: LLM đề xuất gọi Tool (Action)
+        elif llm_response.get("type") == "tool_call":
+            tool_name = llm_response.get("tool_name")
+            arguments = llm_response.get("arguments", {})
+            
+            print(f"🛠️ [Action Proposed]: {tool_name}({arguments})")
+            
+            # Thực thi Tool qua MCP Server
+            mcp_result = mcp_server.call_tool(tool_name, arguments)
+            obs_data = mcp_result.get("result", {})
+            
+            if not obs_data:
+                print(f"👁️ [Observation từ MCP Server]: {{}}")
+                print(f"⚠️ [CHÚ Ý]: MCP Server trả về kết quả rỗng! Học viên cần hoàn thành TODO 2.1 trong 'src/mcp_server.py'.")
+                obs_str = "Error: Không nhận được dữ liệu từ hệ thống."
+            else:
+                obs_str = json.dumps(obs_data, ensure_ascii=False)
+                print(f"👁️ [Observation từ MCP Server]: {obs_str}")
+                
+            yield {
+                "step": step,
+                "query": user_query,
+                "action_type": "TOOL_EXECUTION",
+                "tool_name": tool_name,
+                "arguments": arguments,
+                "observation": obs_data,
+                "latency_ms": latency_ms
+            }
+            
+            # Cập nhật query để đưa kết quả (Observation) vào lượt (step) tiếp theo của vòng lặp
+            user_query = f"{user_query}\n\n[System]: Bạn vừa gọi tool '{tool_name}' và nhận được kết quả sau: {obs_str}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo."
+            
+            # Lưu ý: Không break ở đây, để vòng lặp tiếp tục sang step tiếp theo
+
+
+    

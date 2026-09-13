@@ -51,7 +51,7 @@ function App() {
     const userQuery = input;
     const currentHistory = [...messages];
     
-    setMessages([...currentHistory, { role: 'user', content: userQuery }]);
+    setMessages([...currentHistory, { role: 'user', content: userQuery }, { role: 'assistant', content: '⏳ Đang phân tích và tra cứu hệ thống...' }]);
     setInput('');
     setLoading(true);
     setLatestLogs([]);

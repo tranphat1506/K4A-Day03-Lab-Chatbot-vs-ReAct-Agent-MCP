@@ -4,12 +4,14 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import json
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any
 from src.providers import get_llm_provider
 from src.mcp_server import MCPVinBusServer
-from src.app import run_react_agent
+from src.app import run_react_agent, run_react_agent_stream
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -54,3 +56,17 @@ if __name__ == "__main__":
     import uvicorn
     print("🚀 Khởi chạy FastAPI Server tại http://localhost:8000")
     uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
+
+@app.post("/api/chat/stream")
+def chat_stream(request: ChatRequest):
+    chat_history = list(request.history)
+    
+    def generate():
+        try:
+            for log in run_react_agent_stream(request.query, provider, mcp_server, chat_history=chat_history):
+                # Format as Server-Sent Events
+                yield f"data: {json.dumps(log, ensure_ascii=False)}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            
+    return StreamingResponse(generate(), media_type="text/event-stream")
