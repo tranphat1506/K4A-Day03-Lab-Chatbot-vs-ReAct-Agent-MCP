@@ -3,10 +3,18 @@ import { ProposedPlanCard, GlobalTracker } from './components/TripPlanner';
 import MapCard from './components/MapCard';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin, FiChevronDown } from 'react-icons/fi';
+import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 
 function App() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem('vinbus_chat_history');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Lưu history mỗi khi messages thay đổi
+  useEffect(() => {
+    localStorage.setItem('vinbus_chat_history', JSON.stringify(messages));
+  }, [messages]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -179,6 +187,18 @@ function App() {
               className="hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold hover:bg-emerald-200 transition-colors shadow-sm"
             >
               <FiClock /> Quản lý lộ trình
+            </button>
+            <button
+              onClick={() => {
+                if(window.confirm("Bạn có chắc chắn muốn xóa lịch sử chat?")) {
+                  setMessages([]);
+                  localStorage.removeItem('vinbus_chat_history');
+                }
+              }}
+              className="hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100 transition-colors shadow-sm"
+              title="Xóa lịch sử chat"
+            >
+              <FiTrash2 /> Xóa
             </button>
           
           <button 
