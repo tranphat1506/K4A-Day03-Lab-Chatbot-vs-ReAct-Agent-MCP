@@ -46,8 +46,14 @@ export default function LiveTrackerMap({ startLat, startLng, stationLat, station
   }
 
   // Bounds
-  let boundsCoords = [[startLat, startLng], [stationLat, stationLng]];
+  let boundsCoords = [];
+  if (startLat && startLng) boundsCoords.push([startLat, startLng]);
+  if (stationLat && stationLng) boundsCoords.push([stationLat, stationLng]);
   buses.forEach(b => boundsCoords.push([b.lat, b.lng]));
+  
+  if (boundsCoords.length === 0) {
+    boundsCoords.push([21.0285, 105.8542]); // Fallback Hanoi
+  }
   const bounds = L.latLngBounds(boundsCoords);
 
   return (

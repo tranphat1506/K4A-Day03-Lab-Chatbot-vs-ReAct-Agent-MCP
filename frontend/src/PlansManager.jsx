@@ -133,18 +133,14 @@ export default function PlansManager() {
                 <FiMapPin className="text-emerald-500" /> Bản đồ Live Tracking
               </h3>
               
-              {selectedPlan.startLat && selectedPlan.stationLat ? (
-                <LiveTrackerMap 
-                  startLat={selectedPlan.startLat} 
-                  startLng={selectedPlan.startLng} 
-                  stationLat={selectedPlan.stationLat} 
-                  stationLng={selectedPlan.stationLng} 
-                  liveData={liveData}
-                  targetRoute={selectedPlan.routeNo}
-                />
-              ) : (
-                <div className="p-4 bg-yellow-50 text-yellow-700 rounded-xl text-sm mb-6">⚠️ Kế hoạch này được tạo từ phiên bản cũ, không có dữ liệu tọa độ để vẽ bản đồ.</div>
-              )}
+              <LiveTrackerMap 
+                startLat={selectedPlan.startLat || 21.0285} 
+                startLng={selectedPlan.startLng || 105.8542} 
+                stationLat={selectedPlan.stationLat} 
+                stationLng={selectedPlan.stationLng} 
+                liveData={liveData}
+                targetRoute={selectedPlan.routeNo}
+              />
               
               <h3 className="font-bold text-lg text-gray-800 mt-6 mb-4 flex items-center gap-2">
                 <FiClock className="text-emerald-500" /> Danh sách xe (Real-time)
@@ -162,7 +158,8 @@ export default function PlansManager() {
                         if (!route.list || route.list.length === 0) {
                           return <div key={r_idx} className="p-4 bg-orange-50 text-orange-700 rounded-xl flex items-center gap-3"><FiAlertCircle /> Không có xe nào khả dụng (có thể xe đã đi qua hoặc chưa xuất bến).</div>;
                         }
-                        return route.list.map((bus, b_idx) => {
+                        const sortedBuses = [...route.list].sort((a, b) => a.time - b.time);
+                        return sortedBuses.map((bus, b_idx) => {
                           const eta = Math.ceil(bus.time / 60);
                           const isCatchable = eta >= selectedPlan.walkTimeMins + 2;
                           return (
