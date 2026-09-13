@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Mermaid from './Mermaid';
-import { FiChevronLeft, FiChevronRight, FiPlay, FiMonitor } from 'react-icons/fi';
+import { 
+  FiChevronLeft, FiChevronRight, FiPlay, FiMonitor, 
+  FiMapPin, FiNavigation, FiMap, FiInfo, FiClock, FiSettings 
+} from 'react-icons/fi';
 
 const SLIDES = [
   {
     title: "Trợ Lý Thông Minh VinBus",
     subtitle: "ReAct Agent Pattern cho Bài toán Phương tiện Công cộng",
     content: (
-      <div className="flex flex-col items-center justify-center h-full space-y-8">
-        <div className="w-32 h-32 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center h-full space-y-8 animate-fade-in-up">
+        <div className="w-32 h-32 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-lg">
           <FiMonitor size={64} />
         </div>
         <h1 className="text-5xl font-bold text-gray-800 tracking-tight">Trợ Lý Thông Minh VinBus</h1>
-        <p className="text-2xl text-gray-500">Ứng dụng ReAct Agent & MCP</p>
-        <p className="text-lg text-emerald-600 font-medium mt-4">Demo Day 3 - Khóa K4A</p>
+        <p className="text-2xl text-gray-500">Ứng dụng ReAct Agent & Model Context Protocol</p>
+        <div className="mt-8 px-6 py-2 bg-emerald-50 border border-emerald-200 rounded-full">
+          <p className="text-lg text-emerald-700 font-bold">Demo Day 3 - Khóa K4A</p>
+        </div>
       </div>
     )
   },
@@ -102,30 +107,63 @@ const SLIDES = [
     style VinBus fill:#ef4444,color:white,stroke:#b91c1c`
   },
   {
-    title: "4. Danh sách Công cụ (Tools) và Công dụng",
-    chartId: "slide4",
-    chart: `flowchart LR
-    Agent{LLM Agent} -->|Kích hoạt qua MCP| Tools((Bộ 5 Công Cụ))
-    
-    Tools --> T1[geocoding_search]
-    T1 -.-> D1[Dịch tên địa chỉ thành Tọa độ GPS]
-    
-    Tools --> T2[get_directions]
-    T2 -.-> D2[Tìm Tuyến đường nối 2 điểm A - B]
-    
-    Tools --> T3[get_near_stations]
-    T3 -.-> D3[Quét tìm các Trạm quanh vị trí User]
-    
-    Tools --> T4[get_station_detail]
-    T4 -.-> D4[Xem thông tin tĩnh các tuyến qua trạm]
-    
-    Tools --> T5[get_eta]
-    T5 -.-> D5[Lấy giờ xe tới bến THEO THỜI GIAN THỰC]
-    
-    style Agent fill:#8b5cf6,color:white
-    style Tools fill:#3b82f6,color:white
-    style T5 fill:#10b981,color:white,stroke:#047857,stroke-width:2px
-    style D5 fill:#dcfce3,stroke:#16a34a`
+    title: "4. Bộ 5 Công Cụ (Tools) Giao Tiếp Hệ Thống",
+    content: (
+      <div className="w-full h-full max-w-6xl mx-auto flex flex-col justify-center animate-fade-in-up">
+        <div className="flex items-center gap-3 mb-8">
+          <FiSettings className="text-blue-500" size={32} />
+          <h3 className="text-2xl font-bold text-gray-700">MCP Server Tools</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Tool 1 */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
+              <FiMapPin size={24} />
+            </div>
+            <h4 className="text-lg font-bold text-gray-800 mb-2 font-mono text-sm">1. geocoding_search</h4>
+            <p className="text-gray-600">Biến đổi tên địa danh (Text) thành Tọa độ địa lý (Lat, Lng) để hệ thống có thể hiểu vị trí.</p>
+          </div>
+          
+          {/* Tool 2 */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4">
+              <FiNavigation size={24} />
+            </div>
+            <h4 className="text-lg font-bold text-gray-800 mb-2 font-mono text-sm">2. get_directions</h4>
+            <p className="text-gray-600">Tìm kiếm các tuyến đường khả thi nối từ Điểm A đến Điểm B, bao gồm số trạm và tuyến xe cần bắt.</p>
+          </div>
+          
+          {/* Tool 3 */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4">
+              <FiMap size={24} />
+            </div>
+            <h4 className="text-lg font-bold text-gray-800 mb-2 font-mono text-sm">3. get_near_stations</h4>
+            <p className="text-gray-600">Quét bán kính xung quanh vị trí hiện tại của User để liệt kê các trạm xe buýt gần nhất.</p>
+          </div>
+          
+          {/* Tool 4 */}
+          <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-gray-100 text-gray-600 rounded-lg flex items-center justify-center mb-4">
+              <FiInfo size={24} />
+            </div>
+            <h4 className="text-lg font-bold text-gray-800 mb-2 font-mono text-sm">4. get_station_detail</h4>
+            <p className="text-gray-600">Tra cứu thông tin tĩnh của một trạm cụ thể (Các tuyến xe chạy qua, tần suất, giờ hoạt động).</p>
+          </div>
+          
+          {/* Tool 5 (Ngôi sao) */}
+          <div className="bg-emerald-50 p-6 rounded-xl border-2 border-emerald-400 shadow-md transform hover:-translate-y-1 transition-all md:col-span-2 lg:col-span-1 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">KEY FEATURE</div>
+            <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4">
+              <FiClock size={24} />
+            </div>
+            <h4 className="text-lg font-bold text-emerald-900 mb-2 font-mono text-sm">5. get_eta (Real-time)</h4>
+            <p className="text-emerald-700 font-medium">Lấy thời gian thực xe tới bến (Live ETA). Trả về chính xác Biển số xe, Khoảng cách (mét) và Số giây đếm ngược.</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 ];
 
@@ -145,7 +183,6 @@ export default function Presentation() {
     }
   };
 
-  // Lắng nghe phím mũi tên
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') {
@@ -161,11 +198,11 @@ export default function Presentation() {
   const slide = SLIDES[currentSlide];
 
   return (
-    <div className="h-screen w-full bg-gray-50 flex flex-col font-sans select-none">
+    <div className="h-screen w-full bg-gray-50 flex flex-col font-sans select-none overflow-hidden">
       {/* HEADER */}
-      <div className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-10 shadow-sm z-10">
+      <div className="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-10 shadow-sm z-10 flex-shrink-0">
         <h2 className="text-2xl font-bold text-gray-800 tracking-tight">{slide.title}</h2>
-        <div className="text-sm font-medium text-gray-400">
+        <div className="text-sm font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
           Slide {currentSlide + 1} / {SLIDES.length}
         </div>
       </div>
@@ -175,14 +212,14 @@ export default function Presentation() {
         {slide.content ? (
           slide.content
         ) : (
-          <div className="w-full h-full flex items-center justify-center transform scale-125">
+          <div className="w-full h-full flex items-center justify-center transform scale-125 transition-transform">
             <Mermaid id={slide.chartId} chart={slide.chart} />
           </div>
         )}
       </div>
 
       {/* FOOTER CONTROLS */}
-      <div className="h-24 bg-gray-900 flex items-center justify-between px-10 text-white z-10">
+      <div className="h-24 bg-gray-900 flex items-center justify-between px-10 text-white z-10 flex-shrink-0">
         <div className="flex gap-4">
           <button 
             onClick={handlePrev}
@@ -206,9 +243,9 @@ export default function Presentation() {
 
         <button 
           onClick={() => navigate('/chat')}
-          className="flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-lg transition-transform hover:scale-105"
+          className="flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-lg transition-transform hover:scale-105 animate-pulse"
         >
-          <FiPlay size={20} /> 5. Tiến hành Live Demo
+          <FiPlay size={20} /> TIẾN HÀNH DEMO TRỰC TIẾP
         </button>
       </div>
     </div>
