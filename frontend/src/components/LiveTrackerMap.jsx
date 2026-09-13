@@ -89,14 +89,6 @@ export default function LiveTrackerMap({ startLat, startLng, stationLat, station
       ? "fixed inset-4 z-50 rounded-xl overflow-hidden shadow-2xl border-4 border-emerald-500 bg-white" 
       : "h-64 w-full rounded-xl overflow-hidden border border-gray-200 mt-4 relative z-0"}>
       
-      <button 
-        onClick={() => setIsFullscreen(!isFullscreen)}
-        className="absolute top-2 right-2 z-[400] bg-white p-2 rounded-lg shadow-md hover:bg-gray-50 border border-gray-200"
-        title={isFullscreen ? "Thu nhỏ" : "Phóng to"}
-      >
-        {isFullscreen ? <FiMinimize size={20} className="text-gray-700" /> : <FiMaximize size={20} className="text-gray-700" />}
-      </button>
-
       <MapContainer bounds={bounds} style={{ height: '100%', width: '100%' }} scrollWheelZoom={isFullscreen}>
         <TileLayer
           attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
@@ -134,6 +126,15 @@ export default function LiveTrackerMap({ startLat, startLng, stationLat, station
         
         <ChangeView bounds={bounds} />
       </MapContainer>
+      
+      {/* Nút phóng to đặt SAU MapContainer để nổi lên trên cùng */}
+      <button 
+        onClick={() => setIsFullscreen(!isFullscreen)}
+        className="absolute top-2 right-2 z-[1000] bg-white p-2 rounded-lg shadow-lg hover:bg-gray-50 border-2 border-emerald-500 text-emerald-700 font-bold flex items-center gap-2"
+        title={isFullscreen ? "Thu nhỏ" : "Phóng to"}
+      >
+        {isFullscreen ? <><FiMinimize size={18} /> Thu nhỏ</> : <><FiMaximize size={18} /> Phóng to</>}
+      </button>
     </div>
   );
 }
