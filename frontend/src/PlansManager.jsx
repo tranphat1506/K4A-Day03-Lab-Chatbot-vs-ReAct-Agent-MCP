@@ -22,7 +22,7 @@ export default function PlansManager() {
     const fetchEta = async () => {
       if (!selectedPlan) return;
       try {
-        const res = await fetch(`http://localhost:8000/api/eta?region_code=${selectedPlan.regionCode}&station_id=${selectedPlan.boardingStationId}&walk_time_mins=${selectedPlan.walkTimeMins}`);
+        const res = await fetch(`http://localhost:8000/api/eta?region_code=${selectedPlan.regionCode}&station_id=${selectedPlan.boardingStationId}&walk_time_mins=${selectedPlan.walkTimeMins}&route_no=${selectedPlan.routeNo}`);
         const data = await res.json();
         if (data.status === "SUCCESS" && isMounted) {
           setLiveData(data.data);
