@@ -377,10 +377,22 @@ def execute_show_route_map(**kwargs) -> str:
     }, ensure_ascii=False)
 
 def execute_propose_trip_plan(**kwargs) -> str:
-    return json.dumps({
+    # Validate strictly!
+    required = ["region_code", "boarding_station_id", "station_lat", "station_lng", "route_no", "start_lat", "start_lng", "end_lat", "end_lng"]
+    missing = [k for k in required if k not in kwargs or kwargs[k] is None]
+    
+    if missing:
+        return json.dumps({
+            "status": "ERROR",
+            "message": f"Tool call failed. You MUST provide the following missing parameters: {', '.join(missing)}. Please call geocoding_search or get_directions to find them, then call this tool again."
+        }, ensure_ascii=False)
+        
+    plan = {
         "status": "SUCCESS",
-        "message": f"Đã đề xuất kế hoạch cho tuyến {kwargs.get('route_no')} tại trạm {kwargs.get('boarding_station_id')}."
-    }, ensure_ascii=False)
+        "message": "Đã tạo plan thành công với ĐẦY ĐỦ tọa độ. Giao diện người dùng sẽ hiện nút Xác nhận.",
+        "plan_detail": kwargs
+    }
+    return json.dumps(plan, ensure_ascii=False)
 
 # Router gọi tool thực tế
 TOOL_ROUTER = {

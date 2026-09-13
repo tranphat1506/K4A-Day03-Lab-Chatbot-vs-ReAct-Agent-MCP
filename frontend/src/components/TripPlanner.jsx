@@ -45,6 +45,14 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
     }
   };
 
+  if (!startLat || !endLat || !stationLat) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-3 my-2 flex items-center gap-2">
+        <span className="text-red-700 text-sm font-medium">⚠️ Agent bị lỗi khi tạo Kế hoạch (Thiếu toạ độ GPS). Đừng nhấn nút nào cả, hãy yêu cầu Agent thử lại.</span>
+      </div>
+    );
+  }
+
   if (confirmed) {
     return (
       <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 my-2 flex items-center gap-2">
