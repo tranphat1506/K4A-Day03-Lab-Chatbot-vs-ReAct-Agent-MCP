@@ -51,7 +51,7 @@ function App() {
     const userQuery = input;
     const currentHistory = [...messages];
     
-    setMessages([...currentHistory, { role: 'user', content: userQuery }, { role: 'assistant', content: '⏳ Đang phân tích và tra cứu hệ thống...' }]);
+    setMessages([...currentHistory, { role: 'user', content: userQuery }]);
     setInput('');
     setLoading(true);
     setLatestLogs([]);
@@ -62,7 +62,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const response = await fetch('http://localhost:8000/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -70,24 +70,56 @@ function App() {
           history: currentHistory
         })
       });
-      
-      const data = await response.json();
-      
-      let assistantContent = data.final_answer || "";
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantContent = "";
       let shouldRequestLocation = false;
-      
-      if (assistantContent.includes('[REQUEST_LOCATION]')) {
-        assistantContent = assistantContent.replace(/\[REQUEST_LOCATION\]/g, '').trim();
-        shouldRequestLocation = true;
+      let logs = [];
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const dataStr = line.replace('data: ', '').trim();
+            if (dataStr) {
+              try {
+                const logData = JSON.parse(dataStr);
+                
+                if (logData.error) {
+                    assistantContent = "Error: " + logData.error;
+                    setMessages(prev => [...prev, { role: 'assistant', content: assistantContent }]);
+                    break;
+                }
+                
+                logs = [...logs, logData];
+                setLatestLogs(logs);
+
+                if (logData.action_type === "FINAL_ANSWER") {
+                  assistantContent = logData.output || "";
+                  if (assistantContent.includes("[REQUEST_LOCATION]")) {
+                    shouldRequestLocation = true;
+                    assistantContent = assistantContent.replace(/\[REQUEST_LOCATION\]/g, "").trim();
+                  }
+                  
+                  setMessages(prev => [...prev, { role: 'assistant', content: assistantContent }]);
+                  
+                  if (shouldRequestLocation) {
+                    requestLocation();
+                  }
+                }
+              } catch (e) {
+                console.error("Error parsing JSON chunk:", e, dataStr);
+              }
+            }
+          }
+        }
       }
-      
-      setMessages(prev => [...prev, { role: 'assistant', content: assistantContent }]);
-      
-      // Auto-trigger location popup if AI requested it and we don't have it yet
-      if (shouldRequestLocation) {
-        requestLocation();
-      }
-      setLatestLogs(data.logs || []);
     } catch (error) {
       console.error(error);
       setMessages(prev => [...prev, { role: 'assistant', content: "Hệ thống đang bảo trì. Vui lòng thử lại sau." }]);
