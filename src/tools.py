@@ -174,6 +174,32 @@ TOOLS_SCHEMA = [
             },
             "required": ["region_code", "route_id"]
         }
+    },
+    {
+        "name": "create_jit_tracker",
+        "description": "Tạo một thẻ theo dõi thời gian thực (JIT Tracker) để liên tục giám sát xe buýt sắp tới và báo động cho người dùng khi đến giờ đi bộ ra bến.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "region_code": {
+                    "type": "string",
+                    "description": "Mã khu vực (hn, hcm, pq)."
+                },
+                "boarding_station_id": {
+                    "type": "integer",
+                    "description": "ID của trạm chờ xe."
+                },
+                "route_no": {
+                    "type": "string",
+                    "description": "Tuyến xe buýt cần theo dõi (ví dụ: '140', 'E01')."
+                },
+                "walk_time_mins": {
+                    "type": "integer",
+                    "description": "Thời gian đi bộ ước tính ra bến (tính bằng phút). Nếu không rõ, mặc định là 5."
+                }
+            },
+            "required": ["region_code", "boarding_station_id", "route_no", "walk_time_mins"]
+        }
     }
 ]
 
@@ -328,3 +354,10 @@ def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
         except Exception as e:
             return json.dumps({"status": "EXECUTION_ERROR", "error": str(e)}, ensure_ascii=False)
     return json.dumps({"status": "UNKNOWN_TOOL", "error": f"Tool '{tool_name}' không tồn tại!"}, ensure_ascii=False)
+
+def execute_create_jit_tracker(params: Dict[str, Any]) -> Dict[str, Any]:
+    # Thực tế Backend không cần làm gì, chỉ trả về thành công để Frontend bắt được tín hiệu và mount UI
+    return {
+        "status": "SUCCESS",
+        "message": f"Đã khởi tạo JIT Tracker cho tuyến {params.get('route_no')} tại trạm {params.get('boarding_station_id')}."
+    }
