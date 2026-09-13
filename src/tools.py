@@ -19,15 +19,6 @@ vinbus_client = VinbusClient(timeout=10)
 
 TOOLS_SCHEMA = [
     {
-        "name": "get_current_time",
-        "description": "Lấy thời gian hiện tại của hệ thống để xác định giờ khởi hành.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
-    },
-    {
         "name": "geocoding_search",
         "description": "Tìm kiếm toạ độ GPS của một địa chỉ hoặc địa điểm bằng văn bản.",
         "parameters": {
@@ -113,15 +104,6 @@ TOOLS_SCHEMA = [
 # 2. HÀM THỰC THI TOOL (EXECUTION LAYER) GỌI VINBUS API
 # ==============================================================================
 
-def execute_get_current_time() -> str:
-    """Trả về giờ hiện tại của hệ thống"""
-    now = datetime.now()
-    return json.dumps({
-        "status": "SUCCESS",
-        "time": now.strftime("%H:%M:%S"),
-        "date": now.strftime("%Y-%m-%d")
-    }, ensure_ascii=False)
-
 def execute_geocoding_search(region_code: str, content: str) -> str:
     """Thực thi tìm kiếm tọa độ từ địa chỉ"""
     try:
@@ -156,7 +138,6 @@ def execute_get_eta(region_code: str, station_id: int) -> str:
 
 # Router gọi tool thực tế
 TOOL_ROUTER = {
-    "get_current_time": execute_get_current_time,
     "geocoding_search": execute_geocoding_search,
     "get_near_stations": execute_get_near_stations,
     "get_station_detail": execute_get_station_detail,
