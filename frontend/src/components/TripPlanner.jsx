@@ -6,6 +6,7 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
   const [confirmed, setConfirmed] = useState(false);
   const [fetchedStationLat, setFetchedStationLat] = useState(stationLat);
   const [fetchedStationLng, setFetchedStationLng] = useState(stationLng);
+  const [fetchedStationName, setFetchedStationName] = useState(stationName);
 
   useEffect(() => {
     if (!fetchedStationLat && boardingStationId) {
@@ -15,6 +16,9 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
           if (data.status === "SUCCESS" && data.data) {
             setFetchedStationLat(data.data.lat);
             setFetchedStationLng(data.data.lng);
+            if (!fetchedStationName && data.data.stationName) {
+              setFetchedStationName(data.data.stationName);
+            }
           }
         }).catch(e => console.error(e));
     }
@@ -31,7 +35,7 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
         id: Date.now().toString(),
         regionCode,
         boardingStationId,
-        stationName: stationName || `Trạm ${boardingStationId}`,
+        stationName: fetchedStationName || stationName || `Trạm ${boardingStationId}`,
         stationLat: fetchedStationLat,
         stationLng: fetchedStationLng,
         routeNo,
