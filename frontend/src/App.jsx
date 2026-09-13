@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiSend, FiUser, FiCpu, FiTerminal, FiClock } from 'react-icons/fi';
+import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare } from 'react-icons/fi';
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -39,76 +39,81 @@ function App() {
       setLatestLogs(data.logs || []);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', content: "System error: Connection refused." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Hệ thống đang bảo trì. Vui lòng thử lại sau." }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen bg-white font-mono text-sm overflow-hidden">
+    <div className="flex h-screen bg-gray-50 font-sans text-gray-800">
       
-      {/* CỘT TRÁI: MINIMALIST CHAT */}
-      <div className="w-full lg:w-2/3 flex flex-col bg-white border-r border-gray-200 z-10 relative">
+      {/* CỘT TRÁI: GIAO DIỆN CLIENT TỐI GIẢN & THÂN THIỆN */}
+      <div className="w-full lg:w-2/3 flex flex-col bg-white border-r border-gray-200 z-10 shadow-sm">
         
         {/* Header */}
-        <div className="px-6 py-4 bg-white border-b border-gray-200 flex items-center justify-between sticky top-0 z-20">
+        <div className="px-8 py-5 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-black text-white flex items-center justify-center">
-              <FiCpu size={16} />
+            <div className="w-10 h-10 bg-emerald-600 rounded-md flex items-center justify-center text-white shadow-sm">
+              <FiMap size={20} />
             </div>
             <div>
-              <h1 className="text-base font-semibold text-black tracking-tight">VinBus Agent</h1>
-              <p className="text-xs text-gray-500">Autonomous navigation assistant</p>
+              <h1 className="text-lg font-semibold text-gray-900 tracking-tight">Hỗ trợ lộ trình VinBus</h1>
+              <p className="text-sm text-emerald-600 font-medium">Trực tuyến</p>
             </div>
           </div>
         </div>
 
-        {/* Khu vực nội dung Chat */}
-        <div className="flex-1 p-6 overflow-y-auto scroll-smooth">
+        {/* Khung Chat */}
+        <div className="flex-1 p-4 sm:p-8 overflow-y-auto scroll-smooth bg-gray-50/50">
           {messages.length === 0 && (
-            <div className="flex flex-col h-full items-start justify-end pb-10 space-y-4">
-              <h2 className="text-2xl font-light text-black">VinBus Navigation System</h2>
-              <p className="text-gray-500 max-w-md">
-                Enter your location and destination. The system will retrieve real-time telemetry from the VinBus network.
-              </p>
-              <div className="flex gap-2 mt-4">
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-5 animate-fade-in-up">
+              <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-2">
+                <FiMessageSquare size={36} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">Xin chào!</h2>
+                <p className="text-gray-500 max-w-md mx-auto text-base">
+                  Vui lòng nhập điểm đi và điểm đến. Hệ thống sẽ hướng dẫn chi tiết lộ trình và thời gian xe buýt đến trạm cho bạn.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 mt-4">
                 <button 
-                  className="px-4 py-2 border border-gray-200 text-gray-600 hover:border-black hover:text-black transition-colors"
-                  onClick={() => setInput("Từ Ngã Tư Sở đi VinUni")}
+                  className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:border-emerald-500 hover:text-emerald-700 transition-colors shadow-sm"
+                  onClick={() => setInput("Tôi đang ở Ngã Tư Sở, muốn đi VinUni")}
                 >
-                  Nga Tu So to VinUni
+                  Từ Ngã Tư Sở đi VinUni
                 </button>
                 <button 
-                  className="px-4 py-2 border border-gray-200 text-gray-600 hover:border-black hover:text-black transition-colors"
+                  className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:border-emerald-500 hover:text-emerald-700 transition-colors shadow-sm"
                   onClick={() => setInput("Tìm trạm xe buýt gần nhất")}
                 >
-                  Find nearest station
+                  Tìm trạm gần nhất
                 </button>
               </div>
             </div>
           )}
           
-          <div className="space-y-8">
+          <div className="space-y-6 max-w-3xl mx-auto">
             {messages.map((msg, index) => (
               <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 {msg.role === 'assistant' && (
-                  <div className="w-8 h-8 bg-black flex-shrink-0 flex items-center justify-center text-white mr-4">
-                    <FiCpu size={14} />
+                  <div className="w-9 h-9 bg-emerald-100 rounded-md flex-shrink-0 flex items-center justify-center text-emerald-700 mr-4 mt-1">
+                    <FiMap size={18} />
                   </div>
                 )}
                 
-                <div className={`max-w-[80%] p-4 text-[14px] leading-relaxed border ${
+                <div className={`max-w-[85%] rounded-lg p-4 text-[15px] leading-relaxed shadow-sm ${
                   msg.role === 'user' 
-                    ? 'bg-gray-50 border-gray-200 text-black' 
-                    : 'bg-white border-gray-200 text-black'
+                    ? 'bg-emerald-600 text-white' 
+                    : 'bg-white border border-gray-100 text-gray-800'
                 }`}>
                   <div className="whitespace-pre-wrap">{msg.content}</div>
                 </div>
 
                 {msg.role === 'user' && (
-                  <div className="w-8 h-8 bg-gray-200 flex-shrink-0 flex items-center justify-center text-black ml-4">
-                    <FiUser size={14} />
+                  <div className="w-9 h-9 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center text-gray-600 ml-4 mt-1">
+                    <FiUser size={18} />
                   </div>
                 )}
               </div>
@@ -117,11 +122,16 @@ function App() {
             {/* Loading Indicator */}
             {loading && (
               <div className="flex justify-start items-center">
-                <div className="w-8 h-8 bg-black flex-shrink-0 flex items-center justify-center text-white mr-4">
-                  <FiCpu size={14} />
+                <div className="w-9 h-9 bg-emerald-100 rounded-md flex-shrink-0 flex items-center justify-center text-emerald-700 mr-4">
+                  <FiMap size={18} />
                 </div>
-                <div className="p-4 border border-gray-200 text-gray-400 bg-white flex items-center gap-2">
-                  Processing request...
+                <div className="bg-white border border-gray-100 rounded-lg p-4 shadow-sm flex items-center gap-3">
+                  <div className="flex gap-1.5">
+                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay: "0.2s"}}></span>
+                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{animationDelay: "0.4s"}}></span>
+                  </div>
+                  <span className="text-sm text-gray-500 font-medium">Đang xử lý yêu cầu...</span>
                 </div>
               </div>
             )}
@@ -129,78 +139,85 @@ function App() {
           </div>
         </div>
 
-        {/* Input Area */}
-        <div className="p-4 bg-white border-t border-gray-200">
-          <div className="max-w-4xl mx-auto relative flex items-center">
+        {/* Khung Nhập Liệu */}
+        <div className="p-5 bg-white border-t border-gray-100">
+          <div className="max-w-3xl mx-auto relative flex items-center">
+            <div className="absolute left-4 text-gray-400">
+              <FiSearch size={18} />
+            </div>
             <input 
               type="text" 
-              className="w-full bg-white border border-gray-300 text-black p-4 focus:outline-none focus:border-black transition-colors"
-              placeholder="Enter prompt..."
+              className="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg pl-12 pr-14 py-3.5 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
+              placeholder="Nhập địa điểm hoặc câu hỏi của bạn..."
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
               disabled={loading}
             />
             <button 
-              className={`absolute right-4 text-black transition-colors ${
+              className={`absolute right-2 w-10 h-10 rounded-md flex items-center justify-center transition-colors ${
                 loading || !input.trim() 
-                  ? 'opacity-30 cursor-not-allowed' 
-                  : 'hover:text-gray-500'
+                  ? 'text-gray-300 cursor-not-allowed' 
+                  : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'
               }`}
               onClick={handleSend}
               disabled={loading || !input.trim()}
             >
-              <FiSend size={18} />
+              <FiSend size={16} className={input.trim() && !loading ? "-ml-0.5 mt-0.5" : ""} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* CỘT PHẢI: TRACE LOGS */}
-      <div className="hidden lg:flex w-1/3 bg-gray-50 flex-col">
-        <div className="p-4 border-b border-gray-200 bg-gray-100 flex items-center justify-between">
+      {/* CỘT PHẢI: HỆ THỐNG THEO DÕI LOGS (Cho Demo) */}
+      <div className="hidden lg:flex w-1/3 bg-[#1e293b] flex-col text-slate-300">
+        <div className="p-5 border-b border-slate-700/50 bg-[#0f172a] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiTerminal size={16} className="text-black" />
-            <h2 className="text-xs font-semibold text-black tracking-widest uppercase">System Log</h2>
+            <FiClock size={16} className="text-emerald-400" />
+            <h2 className="text-sm font-semibold tracking-wide text-slate-100">Trace Logs</h2>
           </div>
-          <span className="text-[10px] uppercase border border-gray-300 px-2 py-0.5 text-gray-500 bg-white">ReAct Tracer</span>
+          <span className="text-xs border border-slate-700 bg-slate-800 px-2.5 py-1 rounded-md text-slate-400">System Activity</span>
         </div>
         
-        <div className="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
+        <div className="flex-1 p-5 overflow-y-auto space-y-5 custom-scrollbar">
           {latestLogs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
-              <span className="text-xs">Awaiting execution.</span>
+            <div className="flex flex-col items-center justify-center h-full text-slate-500 gap-3">
+              <span className="text-sm">Chưa có luồng thực thi nào.</span>
             </div>
           ) : (
             latestLogs.map((log, index) => (
-              <div key={index} className="pl-4 pb-4 border-l border-gray-300 last:border-l-0 last:pb-0 relative">
-                <div className={`absolute -left-[5px] top-0 w-2.5 h-2.5 border border-gray-400 bg-white`}></div>
+              <div key={index} className="pl-4 pb-4 border-l border-slate-700 last:border-l-0 last:pb-0 relative">
+                <div className={`absolute -left-[5px] top-0 w-2 h-2 rounded-full ${
+                  log.action_type === 'FINAL_ANSWER' ? 'bg-emerald-500' : 'bg-blue-400'
+                }`}></div>
 
-                <div className="bg-white border border-gray-200 p-3">
-                  <div className="text-[11px] font-semibold text-black uppercase tracking-wider flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
-                    <span>{log.action_type === 'FINAL_ANSWER' ? 'FINAL_ANSWER' : log.tool_name}</span>
-                    <span className="flex items-center gap-1 text-gray-400 font-normal">
-                      <FiClock size={10} /> {log.latency_ms}ms
+                <div className="bg-slate-800/50 rounded-lg border border-slate-700/50 p-4">
+                  <div className="text-xs font-semibold text-slate-200 uppercase tracking-wide flex justify-between items-center mb-3 pb-3 border-b border-slate-700/50">
+                    <span className={log.action_type === 'FINAL_ANSWER' ? 'text-emerald-400' : 'text-blue-400'}>
+                      {log.action_type === 'FINAL_ANSWER' ? 'Hoàn thành' : log.tool_name}
+                    </span>
+                    <span className="text-slate-400 font-normal">
+                      {log.latency_ms}ms
                     </span>
                   </div>
                   
-                  <div className="space-y-3 text-[12px]">
+                  <div className="space-y-4 text-[13px]">
                     <div>
-                      <span className="text-gray-400 uppercase text-[10px] block mb-1">Thought</span>
-                      <p className="text-gray-800">{log.thought}</p>
+                      <span className="text-slate-500 text-xs block mb-1">Mục đích:</span>
+                      <p className="text-slate-300 leading-relaxed">{log.thought}</p>
                     </div>
                     
                     {log.action_type === 'TOOL_EXECUTION' && (
-                      <div className="space-y-2 mt-2 pt-2 border-t border-gray-100">
-                        <div>
-                          <span className="text-gray-400 uppercase text-[10px] block mb-1">Arguments</span>
-                          <div className="bg-gray-50 border border-gray-100 p-2 text-gray-600 font-mono text-[10px] overflow-x-auto">
+                      <div className="space-y-3">
+                        <div className="bg-[#0f172a] rounded-md p-3 border border-slate-700/50">
+                          <span className="text-slate-500 text-xs block mb-1">Dữ liệu gửi đi (Input):</span>
+                          <div className="text-emerald-300/80 font-mono text-xs overflow-x-auto">
                             {JSON.stringify(log.arguments)}
                           </div>
                         </div>
-                        <div>
-                          <span className="text-gray-400 uppercase text-[10px] block mb-1">Observation</span>
-                          <div className="bg-gray-50 border border-gray-100 p-2 text-gray-600 font-mono text-[10px] overflow-x-auto max-h-32">
+                        <div className="bg-[#0f172a] rounded-md p-3 border border-slate-700/50">
+                          <span className="text-slate-500 text-xs block mb-1">Dữ liệu nhận về (Output):</span>
+                          <div className="text-yellow-300/80 font-mono text-xs overflow-x-auto max-h-32">
                             {JSON.stringify(log.observation)}
                           </div>
                         </div>
