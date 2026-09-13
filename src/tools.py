@@ -34,8 +34,7 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["region_code", "content"]
-        }
-    },
+        },
     {
         "name": "get_near_stations",
         "description": "Tìm các trạm xe buýt lân cận trong bán kính r mét từ tọa độ cho trước.",
@@ -60,8 +59,7 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["lat", "lng", "radius", "region_code"]
-        }
-    },
+        },
     {
         "name": "get_directions",
         "description": "Tìm lộ trình xe buýt tối ưu từ điểm A đến điểm B. Trả về nhiều gợi ý lộ trình, bao gồm thời gian đi, số trạm đi qua, và các tuyến xe.",
@@ -75,8 +73,7 @@ TOOLS_SCHEMA = [
                 "region_code": {"type": "string", "description": "Mã khu vực (ví dụ: 'hn')"}
             },
             "required": ["start_lat", "start_lng", "end_lat", "end_lng", "region_code"]
-        }
-    },
+        },
     {
         "name": "get_station_detail",
         "description": "Lấy thông tin chi tiết của một trạm xe buýt và các tuyến xe đi qua trạm đó.",
@@ -93,8 +90,7 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["station_id", "region_code"]
-        }
-    },
+        },
     {
         "name": "get_eta",
         "description": "Lấy thời gian dự kiến (ETA) của các xe buýt sắp tới một trạm xe cụ thể.",
@@ -111,6 +107,32 @@ TOOLS_SCHEMA = [
                 }
             },
             "required": ["region_code", "station_id"]
+        }
+    },
+    {
+        "name": "get_bus_detail_at_station",
+        "description": "Lấy tọa độ GPS (kinh độ, vĩ độ) hiện tại và trạng thái chi tiết của một chiếc xe buýt cụ thể đang chạy trên tuyến.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "region_code": {
+                    "type": "string",
+                    "description": "Mã khu vực (ví dụ: 'hn', 'hcm')"
+                },
+                "station_id": {
+                    "type": "integer",
+                    "description": "ID của trạm xe buýt"
+                },
+                "route_id": {
+                    "type": "integer",
+                    "description": "ID của tuyến đường (route_id)"
+                },
+                "bus_id": {
+                    "type": "string",
+                    "description": "Mã định danh của xe buýt (busId hoặc vehicleNumber, ví dụ '29B19040')"
+                }
+            },
+            "required": ["region_code", "station_id", "route_id", "bus_id"]
         }
     }
 ]
@@ -187,6 +209,14 @@ def execute_get_eta(region_code: str, station_id: int) -> str:
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
+def execute_get_bus_detail(region_code: str, station_id: int, route_id: int, bus_id: str) -> str:
+    """Thực thi lấy chi tiết 1 xe buýt (bao gồm tọa độ GPS)"""
+    try:
+        result = vinbus_client.get_bus_detail_at_station(region_code, station_id, route_id, bus_id)
+        return json.dumps({"status": "SUCCESS", "data": result}, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
+
 def execute_get_directions(start_lat: float, start_lng: float, end_lat: float, end_lng: float, region_code: str) -> str:
     """Tìm lộ trình chỉ đường tối ưu (multimodal)."""
     try:
@@ -201,7 +231,8 @@ TOOL_ROUTER = {
     "get_near_stations": execute_get_near_stations,
     "get_station_detail": execute_get_station_detail,
     "get_eta": execute_get_eta,
-    "get_directions": execute_get_directions
+    "get_directions": execute_get_directions,
+    "get_bus_detail_at_station": execute_get_bus_detail
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
