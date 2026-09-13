@@ -62,6 +62,18 @@ function App() {
     if (!input.trim()) return;
 
     const userQuery = input;
+    
+    // TIÊU CHUẨN HÓA CONTEXT WINDOW: 
+    // Chỉ lấy text content (bỏ qua thẻ UI như trip_plan/map)
+    // Và giữ lại tối đa 10 tin nhắn gần nhất để không vượt quá giới hạn token
+    const normalizedHistory = messages
+      .filter(msg => !msg.type || msg.type === 'text')
+      .slice(-10)
+      .map(msg => ({
+        role: msg.role,
+        content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
+      }));
+      
     const currentHistory = [...messages];
     
     setMessages([...currentHistory, { role: 'user', content: userQuery }]);
@@ -80,7 +92,7 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: finalQuery,
-          history: currentHistory
+          history: normalizedHistory
         })
       });
 
