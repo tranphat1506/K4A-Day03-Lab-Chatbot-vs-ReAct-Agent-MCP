@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiClock, FiCheck, FiBell, FiTrash2 } from 'react-icons/fi';
 
 // 1. Component hiển thị đề xuất trong Chat
-export function ProposedPlanCard({ regionCode, boardingStationId, routeNo, walkTimeMins }) {
+export function ProposedPlanCard({ regionCode, boardingStationId, stationName, stationLat, stationLng, routeNo, walkTimeMins, startLat, startLng }) {
   const [confirmed, setConfirmed] = useState(false);
 
   const handleConfirm = async () => {

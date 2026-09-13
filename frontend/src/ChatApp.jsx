@@ -293,8 +293,13 @@ function App() {
                     <ProposedPlanCard 
                       regionCode={msg.content.region_code}
                       boardingStationId={msg.content.boarding_station_id}
+                      stationName={msg.content.station_name}
+                      stationLat={msg.content.station_lat}
+                      stationLng={msg.content.station_lng}
                       routeNo={msg.content.route_no}
                       walkTimeMins={msg.content.walk_time_mins}
+                      startLat={msg.content.start_lat}
+                      startLng={msg.content.start_lng}
                     />
                   ) : msg.type === 'route_map' ? (
                     <MapCard 

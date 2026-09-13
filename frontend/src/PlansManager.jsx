@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiClock, FiMapPin, FiNavigation, FiTrash2, FiBell, FiAlertCircle } from 'react-icons/fi';
+import LiveTrackerMap from './components/LiveTrackerMap';
 
 export default function PlansManager() {
   const navigate = useNavigate();
@@ -120,7 +121,7 @@ export default function PlansManager() {
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <div className="bg-slate-50 p-4 rounded-xl">
                   <span className="text-xs text-gray-500 font-semibold uppercase">Mã Trạm Đón</span>
-                  <p className="text-lg font-bold text-gray-800 mt-1">{selectedPlan.boardingStationId}</p>
+                  <p className="text-lg font-bold text-gray-800 mt-1">{selectedPlan.stationName || selectedPlan.boardingStationId}</p>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-xl">
                   <span className="text-xs text-gray-500 font-semibold uppercase">Thời Gian Đi Bộ</span>
@@ -129,7 +130,24 @@ export default function PlansManager() {
               </div>
 
               <h3 className="font-bold text-lg text-gray-800 mb-4 flex items-center gap-2">
-                <FiClock className="text-emerald-500" /> Xe Sắp Tới (Real-time)
+                <FiMapPin className="text-emerald-500" /> Bản đồ Live Tracking
+              </h3>
+              
+              {selectedPlan.startLat && selectedPlan.stationLat ? (
+                <LiveTrackerMap 
+                  startLat={selectedPlan.startLat} 
+                  startLng={selectedPlan.startLng} 
+                  stationLat={selectedPlan.stationLat} 
+                  stationLng={selectedPlan.stationLng} 
+                  liveData={liveData}
+                  targetRoute={selectedPlan.routeNo}
+                />
+              ) : (
+                <div className="p-4 bg-yellow-50 text-yellow-700 rounded-xl text-sm mb-6">⚠️ Kế hoạch này được tạo từ phiên bản cũ, không có dữ liệu tọa độ để vẽ bản đồ.</div>
+              )}
+              
+              <h3 className="font-bold text-lg text-gray-800 mt-6 mb-4 flex items-center gap-2">
+                <FiClock className="text-emerald-500" /> Danh sách xe (Real-time)
               </h3>
               
               <div className="space-y-3">
