@@ -14,6 +14,24 @@ export default function PlansManager() {
     setPlans(stored);
   }, []);
 
+  // Auto-fetch station name if missing
+  useEffect(() => {
+    if (selectedPlan && selectedPlan.boardingStationId && (!selectedPlan.stationName || selectedPlan.stationName.startsWith("Trạm "))) {
+      fetch(`http://localhost:8000/api/station/${selectedPlan.boardingStationId}?region_code=${selectedPlan.regionCode || 'hn'}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "SUCCESS" && data.data && data.data.stationName) {
+            setSelectedPlan(prev => ({ ...prev, stationName: data.data.stationName }));
+            setPlans(prevPlans => {
+              const newPlans = prevPlans.map(p => p.id === selectedPlan.id ? { ...p, stationName: data.data.stationName } : p);
+              localStorage.setItem('vinbus_plans', JSON.stringify(newPlans));
+              return newPlans;
+            });
+          }
+        }).catch(console.error);
+    }
+  }, [selectedPlan?.id, selectedPlan?.boardingStationId]);
+
   // Poll ETA cho plan đang được chọn xem chi tiết
   useEffect(() => {
     let timeoutId;
@@ -131,8 +149,8 @@ export default function PlansManager() {
                 </div>
                 <div className="grid grid-cols-2 divide-x divide-gray-100">
                   <div className="p-4 text-center">
-                    <span className="text-xs text-gray-500 font-semibold uppercase block mb-1">Mã Trạm Đón</span>
-                    <p className="text-lg font-bold text-gray-800">{selectedPlan.stationName || selectedPlan.boardingStationId}</p>
+                    <span className="text-xs text-gray-500 font-semibold uppercase block mb-1">Trạm Đón</span>
+                    <p className="text-lg font-bold text-gray-800 line-clamp-2" title={selectedPlan.stationName || selectedPlan.boardingStationId}>{selectedPlan.stationName || selectedPlan.boardingStationId}</p>
                   </div>
                   <div className="p-4 text-center">
                     <span className="text-xs text-gray-500 font-semibold uppercase block mb-1">Thời Gian Đi Bộ</span>
