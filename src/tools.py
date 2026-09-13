@@ -156,6 +156,24 @@ TOOLS_SCHEMA = [
             },
             "required": ["region_code", "route_keyword"]
         }
+    },
+    {
+        "name": "get_route_stations",
+        "description": "Lấy danh sách các trạm dừng (station_id, tên trạm, địa chỉ) thuộc một tuyến xe buýt (route_id) cụ thể. TUYỆT ĐỐI KHÔNG dùng routeId truyền vào cho tham số station_id của các hàm khác, phải dùng hàm này để lấy station_id trước.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "region_code": {
+                    "type": "string",
+                    "description": "Mã khu vực (ví dụ: 'hn', 'hcm')"
+                },
+                "route_id": {
+                    "type": "integer",
+                    "description": "ID của tuyến xe buýt (routeId, ví dụ: 103110)"
+                }
+            },
+            "required": ["region_code", "route_id"]
+        }
     }
 ]
 
@@ -234,6 +252,26 @@ def execute_get_eta(region_code: str, station_id: int) -> str:
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
+def execute_get_route_stations(region_code: str, route_id: int) -> str:
+    """Thực thi lấy danh sách trạm của một tuyến xe buýt"""
+    try:
+        res = vinbus_client._request("/client/route/detail", params={"routeId": route_id, "regionCode": region_code})
+        stations = res.get("stations", [])
+        
+        # Format lại cho gọn nhẹ
+        compact_stations = []
+        for s in stations:
+            compact_stations.append({
+                "stationId": s.get("stationId"),
+                "stationName": s.get("stationName"),
+                "stationAddress": s.get("stationAddress"),
+                "direction": "Lượt đi" if s.get("stationDirection") == 0 else "Lượt về"
+            })
+            
+        return json.dumps({"status": "SUCCESS", "routeNo": res.get("routeNo"), "stations": compact_stations}, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
+
 def execute_search_route(region_code: str, route_keyword: str) -> str:
     """Thực thi tìm kiếm tuyến xe buýt"""
     try:
@@ -278,7 +316,8 @@ TOOL_ROUTER = {
     "get_eta": execute_get_eta,
     "get_directions": execute_get_directions,
     "get_bus_detail_at_station": execute_get_bus_detail,
-    "search_route": execute_search_route
+    "search_route": execute_search_route,
+    "get_route_stations": execute_get_route_stations
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:

@@ -182,7 +182,7 @@ export default function Presentation() {
               <div className="absolute -top-3 bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Python SDK</div>
               <FiBox className="text-emerald-400 mb-4" size={40} />
               <h4 className="font-bold text-lg text-emerald-100">3. MCP Server</h4>
-              <p className="text-sm text-emerald-300/70 text-center mt-3">Đăng ký & Cung cấp<br/>7 Công cụ (Tools)</p>
+              <p className="text-sm text-emerald-300/70 text-center mt-3">Đăng ký & Cung cấp<br/>8 Công cụ (Tools)</p>
             </div>
 
             <div className="text-emerald-500/50 font-bold hidden md:flex flex-col items-center justify-center"><FiArrowRight size={24} /><span className="text-[10px] uppercase mt-1">HTTP</span></div>
@@ -204,7 +204,7 @@ export default function Presentation() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-6">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Bộ 7 Công Cụ Giao Tiếp</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Bộ 8 Công Cụ Giao Tiếp</h2>
               <p className="text-gray-500 text-lg">Các Tools được MCP Server expose cho LLM.</p>
             </div>
             <div className="w-16 h-1 bg-blue-500 rounded-full md:hidden"></div>
@@ -260,11 +260,20 @@ export default function Presentation() {
               <p className="text-gray-500">Tìm kiếm thông tin danh mục tuyến xe (số tuyến, giờ hoạt động, giãn cách chuyến).</p>
             </div>
             
+            
+            <div className="bg-white p-8 rounded-3xl border border-gray-200 hover:border-gray-300 transition-all group">
+              <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <FiMapPin size={28} />
+              </div>
+              <h4 className="text-xl font-bold text-gray-900 mb-3 font-mono">7. get_route_stations</h4>
+              <p className="text-gray-500">Tra cứu toàn bộ danh sách các trạm dừng (station_id) thuộc một tuyến xe buýt cụ thể.</p>
+            </div>
+            
             <div className="bg-emerald-900 p-8 rounded-3xl border border-emerald-800 transform md:col-span-2 lg:col-span-3 relative overflow-hidden text-white flex flex-col md:flex-row gap-8 items-center justify-between">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
               <div>
                 <div className="inline-block bg-emerald-800 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 border border-emerald-700">TÍNH NĂNG CỐT LÕI</div>
-                <h4 className="text-2xl font-bold mb-3 font-mono">7. get_eta (Real-time)</h4>
+                <h4 className="text-2xl font-bold mb-3 font-mono">8. get_eta (Real-time)</h4>
                 <p className="text-emerald-100/80 leading-relaxed max-w-lg">Lấy thời gian thực xe tới bến (Live ETA). Trả về chính xác Biển số xe, Khoảng cách (mét) và Số giây đếm ngược.</p>
               </div>
               <div className="w-24 h-24 bg-emerald-800 text-emerald-400 rounded-full flex items-center justify-center flex-shrink-0 ">
