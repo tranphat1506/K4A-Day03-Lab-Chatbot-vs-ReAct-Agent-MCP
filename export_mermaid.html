@@ -70,7 +70,7 @@ flowchart TD
         A2[Người dùng hỏi: Bao giờ xe buýt tới?] --> B2[LLM nhận diện Yêu cầu]
         B2 --> C2[LLM kích hoạt Tool get_eta]
         C2 --> D2[Lấy Live Data từ hệ thống VinBus API]
-        D2 --> E2[Trả lời chính xác: "Xe sắp tới trong 3 phút"]
+        D2 --> E2[Trả lời chính xác: Xe sắp tới trong 3 phút]
     end
     
     Traditional ~~~ ReAct
@@ -157,19 +157,19 @@ flowchart TD
 flowchart LR
     Agent{LLM Agent} -->|Kích hoạt qua MCP| Tools((Bộ 5 Công Cụ))
     
-    Tools --> T1[`geocoding_search`]
+    Tools --> T1[geocoding_search]
     T1 -.-> D1[Dịch tên địa chỉ thành Tọa độ GPS]
     
-    Tools --> T2[`get_directions`]
+    Tools --> T2[get_directions]
     T2 -.-> D2[Tìm Tuyến đường nối 2 điểm A - B]
     
-    Tools --> T3[`get_near_stations`]
+    Tools --> T3[get_near_stations]
     T3 -.-> D3[Quét tìm các Trạm quanh vị trí User]
     
-    Tools --> T4[`get_station_detail`]
+    Tools --> T4[get_station_detail]
     T4 -.-> D4[Xem thông tin tĩnh các tuyến qua trạm]
     
-    Tools --> T5[`get_eta`]
+    Tools --> T5[get_eta]
     T5 -.-> D5[Lấy giờ xe tới bến THEO THỜI GIAN THỰC]
     
     style Agent fill:#8b5cf6,color:white
