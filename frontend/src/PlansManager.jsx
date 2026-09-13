@@ -136,25 +136,35 @@ export default function PlansManager() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border border-emerald-100 shadow-sm mb-8 overflow-hidden">
-                <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-emerald-800 font-medium">Từ vị trí của bạn</p>
-                    <p className="text-xs text-emerald-600 font-mono mt-1">{selectedPlan.startLat?.toFixed(4)}, {selectedPlan.startLng?.toFixed(4)}</p>
+              <div className="bg-white rounded-xl border border-emerald-100 shadow-sm mb-8 p-5">
+                <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <FiNavigation className="text-emerald-500" /> Hướng dẫn di chuyển
+                </h3>
+                
+                <div className="relative border-l-2 border-emerald-200 ml-3 pl-6 space-y-6">
+                  {/* Điểm xuất phát */}
+                  <div className="relative">
+                    <div className="absolute -left-[33px] top-0 w-4 h-4 bg-white border-4 border-emerald-500 rounded-full"></div>
+                    <h4 className="font-bold text-gray-800 text-lg">Vị trí của bạn</h4>
+                    <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                      <span className="bg-gray-100 px-2 py-0.5 rounded text-xs">Bắt đầu đi bộ {selectedPlan.walkTimeMins} phút</span>
+                    </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-emerald-800 font-medium">Đến điểm cuối</p>
-                    <p className="text-xs text-emerald-600 font-mono mt-1">{selectedPlan.endLat?.toFixed(4) || "Chưa xác định"}, {selectedPlan.endLng?.toFixed(4) || ""}</p>
+                  
+                  {/* Trạm đón */}
+                  <div className="relative">
+                    <div className="absolute -left-[33px] top-0 w-4 h-4 bg-emerald-500 border-4 border-emerald-100 rounded-full"></div>
+                    <h4 className="font-bold text-emerald-700 text-lg">{selectedPlan.stationName || `Trạm ${selectedPlan.boardingStationId}`}</h4>
+                    <p className="text-sm text-emerald-600 flex items-center gap-1 mt-1 font-medium bg-emerald-50 inline-block px-3 py-1 rounded-full border border-emerald-100">
+                      🚌 Đón xe tuyến {selectedPlan.routeNo}
+                    </p>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 divide-x divide-gray-100">
-                  <div className="p-4 text-center">
-                    <span className="text-xs text-gray-500 font-semibold uppercase block mb-1">Trạm Đón</span>
-                    <p className="text-lg font-bold text-gray-800 line-clamp-2" title={selectedPlan.stationName || selectedPlan.boardingStationId}>{selectedPlan.stationName || selectedPlan.boardingStationId}</p>
-                  </div>
-                  <div className="p-4 text-center">
-                    <span className="text-xs text-gray-500 font-semibold uppercase block mb-1">Thời Gian Đi Bộ</span>
-                    <p className="text-lg font-bold text-emerald-600">{selectedPlan.walkTimeMins} phút</p>
+                  
+                  {/* Điểm đến */}
+                  <div className="relative">
+                    <div className="absolute -left-[33px] top-0 w-4 h-4 bg-white border-4 border-orange-400 rounded-full"></div>
+                    <h4 className="font-bold text-gray-800 text-lg">Điểm đến của bạn</h4>
+                    <p className="text-sm text-gray-500 mt-1">Kết thúc hành trình</p>
                   </div>
                 </div>
               </div>
@@ -198,8 +208,11 @@ export default function PlansManager() {
                           return (
                             <div key={`${r_idx}-${b_idx}`} className={`p-4 rounded-xl flex justify-between items-center ${isCatchable ? 'bg-emerald-50 border border-emerald-100' : 'bg-red-50 border border-red-100'}`}>
                               <div>
-                                <p className="font-bold text-gray-800">Biển số: {bus.vehicleNumber || bus.busId}</p>
-                                <p className="text-sm text-gray-600">Khoảng cách: {(bus.distance/1000).toFixed(1)} km</p>
+                                <p className="font-bold text-gray-800 flex items-center gap-2">
+                                  Xe {bus.vehicleNumber || bus.busId}
+                                  <span className="text-xs bg-white bg-opacity-50 px-2 py-0.5 rounded font-normal border border-gray-200">Tuyến {selectedPlan.routeNo}</span>
+                                </p>
+                                <p className="text-sm text-gray-600 mt-1">Cách trạm đón: {(bus.distance/1000).toFixed(1)} km</p>
                               </div>
                               <div className="text-right">
                                 <p className={`text-2xl font-black ${isCatchable ? 'text-emerald-600' : 'text-red-500'}`}>{eta} <span className="text-base font-normal">phút</span></p>
