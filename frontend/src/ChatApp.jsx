@@ -311,6 +311,8 @@ function App() {
                       walkTimeMins={msg.content.walk_time_mins}
                       startLat={msg.content.start_lat}
                       startLng={msg.content.start_lng}
+                      endLat={msg.content.end_lat}
+                      endLng={msg.content.end_lng}
                     />
                   ) : msg.type === 'route_map' ? (
                     <MapCard 

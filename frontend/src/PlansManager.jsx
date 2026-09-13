@@ -138,6 +138,9 @@ export default function PlansManager() {
                 startLng={selectedPlan.startLng || 105.8542} 
                 stationLat={selectedPlan.stationLat} 
                 stationLng={selectedPlan.stationLng} 
+                endLat={selectedPlan.endLat}
+                endLng={selectedPlan.endLng}
+                regionCode={selectedPlan.regionCode}
                 liveData={liveData}
                 targetRoute={selectedPlan.routeNo}
               />
