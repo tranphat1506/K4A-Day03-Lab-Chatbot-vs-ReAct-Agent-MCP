@@ -36,9 +36,9 @@
   },
   {
     "id": "TC06",
-    "type": "dynamic_fallback",
-    "question": "Bây giờ tui muốn về nhà ở Phố Biển 19, Vinhomes Ocean Park được không?",
-    "expected_behavior": "Agent gọi get_current_time và get_user_gps_position. GPS bị lỗi, Agent hỏi lại user đang ở đâu. Sau đó gọi geocoding cho Phố Biển 19.",
+    "type": "context_injection",
+    "question": "Tôi đang đứng ở [21.0029, 105.8202] (Ngã Tư Sở), bây giờ tui muốn về nhà ở Phố Biển 19, Vinhomes Ocean Park được không?",
+    "expected_behavior": "Agent nhận context tọa độ từ prompt, gọi get_near_stations tại điểm đứng, gọi geocoding điểm đến, hướng dẫn ra trạm nhưng không tính ETA đi bộ.",
     "complexity": "High"
   }
 ]

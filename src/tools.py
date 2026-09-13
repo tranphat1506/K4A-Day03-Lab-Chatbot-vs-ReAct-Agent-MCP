@@ -28,15 +28,6 @@ TOOLS_SCHEMA = [
         }
     },
     {
-        "name": "get_user_gps_position",
-        "description": "Lấy vị trí tọa độ GPS hiện tại của người dùng (yêu cầu cấp quyền).",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "required": []
-        }
-    },
-    {
         "name": "geocoding_search",
         "description": "Tìm kiếm toạ độ GPS của một địa chỉ hoặc địa điểm bằng văn bản.",
         "parameters": {
@@ -131,14 +122,6 @@ def execute_get_current_time() -> str:
         "date": now.strftime("%Y-%m-%d")
     }, ensure_ascii=False)
 
-def execute_get_user_gps_position() -> str:
-    """Mô phỏng lỗi không lấy được GPS để test graceful fallback của LLM"""
-    return json.dumps({
-        "status": "ERROR",
-        "error_code": "PERMISSION_DENIED",
-        "message": "Không thể lấy vị trí GPS vì người dùng chưa cấp quyền trình duyệt. Vui lòng yêu cầu người dùng tự nhập địa chỉ."
-    }, ensure_ascii=False)
-
 def execute_geocoding_search(region_code: str, content: str) -> str:
     """Thực thi tìm kiếm tọa độ từ địa chỉ"""
     try:
@@ -174,7 +157,6 @@ def execute_get_eta(region_code: str, station_id: int) -> str:
 # Router gọi tool thực tế
 TOOL_ROUTER = {
     "get_current_time": execute_get_current_time,
-    "get_user_gps_position": execute_get_user_gps_position,
     "geocoding_search": execute_geocoding_search,
     "get_near_stations": execute_get_near_stations,
     "get_station_detail": execute_get_station_detail,
