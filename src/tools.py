@@ -176,6 +176,21 @@ TOOLS_SCHEMA = [
         }
     },
     {
+        "name": "show_route_map",
+        "description": "Hiển thị lộ trình lên bản đồ thật cho người dùng xem.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "start_lat": {"type": "number"},
+                "start_lng": {"type": "number"},
+                "end_lat": {"type": "number"},
+                "end_lng": {"type": "number"},
+                "region_code": {"type": "string"}
+            },
+            "required": ["start_lat", "start_lng", "end_lat", "end_lng", "region_code"]
+        }
+    },
+    {
         "name": "propose_trip_plan",
         "description": "Đề xuất một kế hoạch chuyến đi (Trip Plan) cho người dùng xác nhận. (JIT Tracker) để liên tục giám sát xe buýt sắp tới và báo động cho người dùng khi đến giờ đi bộ ra bến.",
         "parameters": {
@@ -355,6 +370,12 @@ def execute_get_directions(start_lat: float, start_lng: float, end_lat: float, e
     except Exception as e:
         return json.dumps({"status": "ERROR", "message": str(e)}, ensure_ascii=False)
 
+def execute_show_route_map(**kwargs) -> str:
+    return json.dumps({
+        "status": "SUCCESS",
+        "message": "Đã render bản đồ thành công."
+    }, ensure_ascii=False)
+
 def execute_propose_trip_plan(**kwargs) -> str:
     return json.dumps({
         "status": "SUCCESS",
@@ -371,7 +392,8 @@ TOOL_ROUTER = {
     "get_bus_detail_at_station": execute_get_bus_detail,
     "search_route": execute_search_route,
     "get_route_stations": execute_get_route_stations,
-    "propose_trip_plan": execute_propose_trip_plan
+    "propose_trip_plan": execute_propose_trip_plan,
+    "show_route_map": execute_show_route_map
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:

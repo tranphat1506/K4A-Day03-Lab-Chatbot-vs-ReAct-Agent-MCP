@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import { ProposedPlanCard, GlobalTracker } from './components/TripPlanner';
+import MapCard from './components/MapCard';
 import { useState, useRef, useEffect } from 'react';
 import { FiSend, FiUser, FiMap, FiClock, FiSearch, FiMessageSquare, FiNavigation, FiMapPin, FiChevronDown } from 'react-icons/fi';
 
@@ -107,10 +108,17 @@ function App() {
                 logs = [...logs, logData];
                 
                 if (logData.action_type === "TOOL_EXECUTION" && logData.tool_name === "propose_trip_plan") {
-                  // We inject a special message type to render the card inline
                   setMessages(prev => [...prev, { 
                     role: 'assistant', 
                     type: 'trip_plan',
+                    content: logData.arguments
+                  }]);
+                }
+                
+                if (logData.action_type === "TOOL_EXECUTION" && logData.tool_name === "show_route_map") {
+                  setMessages(prev => [...prev, { 
+                    role: 'assistant', 
+                    type: 'route_map',
                     content: logData.arguments
                   }]);
                 }
@@ -244,6 +252,14 @@ function App() {
                       boardingStationId={msg.content.boarding_station_id}
                       routeNo={msg.content.route_no}
                       walkTimeMins={msg.content.walk_time_mins}
+                    />
+                  ) : msg.type === 'route_map' ? (
+                    <MapCard 
+                      startLat={msg.content.start_lat}
+                      startLng={msg.content.start_lng}
+                      endLat={msg.content.end_lat}
+                      endLng={msg.content.end_lng}
+                      regionCode={msg.content.region_code}
                     />
                   ) : (
                     <div className="markdown-body text-sm">

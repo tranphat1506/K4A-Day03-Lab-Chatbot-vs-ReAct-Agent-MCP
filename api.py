@@ -162,3 +162,31 @@ def get_eta_api(region_code: str, station_id: int):
         return {"status": "SUCCESS", "data": etas}
     except Exception as e:
         return {"status": "ERROR", "message": str(e)}
+
+import polyline
+@app.get("/api/directions")
+def get_directions_api(start_lat: float, start_lng: float, end_lat: float, end_lng: float, region_code: str = "hn"):
+    client = VinbusClient(timeout=10)
+    try:
+        directions = client.get_directions(start_lat, start_lng, end_lat, end_lng, region_code)
+        
+        # Lấy lộ trình tối ưu nhất (index 0)
+        if not directions:
+            return {"status": "SUCCESS", "data": []}
+            
+        best_route = directions[0]
+        points = []
+        
+        for leg in best_route.get("detailList", []):
+            encoded = leg.get("busPathPoints", "")
+            if encoded:
+                decoded = polyline.decode(encoded)
+                points.extend(decoded)
+                
+        # Nếu không có path từ bus, vẽ đường thẳng (chưa tính đường đi bộ)
+        if not points:
+            points = [(start_lat, start_lng), (end_lat, end_lng)]
+            
+        return {"status": "SUCCESS", "data": points}
+    except Exception as e:
+        return {"status": "ERROR", "message": str(e)}
