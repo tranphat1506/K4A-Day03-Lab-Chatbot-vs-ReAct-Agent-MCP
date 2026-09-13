@@ -15,7 +15,7 @@ export default function Presentation() {
       {/* 1. HERO SECTION */}
       <section className="relative w-full py-32 flex flex-col items-center justify-center bg-white border-b border-gray-200 text-center px-4 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern opacity-[0.03] pointer-events-none"></div>
-        <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-3xl shadow-emerald-200 shadow-xl flex items-center justify-center mb-8 transform -rotate-6">
+        <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-3xl border border-emerald-100 flex items-center justify-center mb-8 transform -rotate-6">
           <FiMonitor size={48} />
         </div>
         <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">Trợ Lý Thông Minh <span className="text-emerald-600">VinBus</span></h1>
@@ -25,7 +25,7 @@ export default function Presentation() {
         
         <button 
           onClick={() => navigate('/chat')}
-          className="group relative flex items-center gap-3 px-10 py-5 bg-gray-900 hover:bg-gray-800 text-white rounded-full font-bold text-lg shadow-2xl transition-all hover:scale-105 hover:shadow-gray-400"
+          className="group relative flex items-center gap-3 px-10 py-5 bg-gray-900 hover:bg-gray-800 text-white rounded-full font-bold text-lg transition-all hover:bg-gray-800"
         >
           <span>Trải nghiệm Live Demo</span>
           <div className="w-8 h-8 bg-white text-gray-900 rounded-full flex items-center justify-center group-hover:bg-emerald-400 group-hover:text-white transition-colors">
@@ -33,7 +33,7 @@ export default function Presentation() {
           </div>
         </button>
 
-        <div className="mt-12 px-5 py-2 bg-gray-100 rounded-full border border-gray-200 shadow-inner">
+        <div className="mt-12 px-5 py-2 bg-gray-100 rounded-full border border-gray-200 ">
           <p className="text-sm text-gray-600 font-semibold tracking-wide">DEMO DAY 3 - K4A</p>
         </div>
       </section>
@@ -48,15 +48,15 @@ export default function Presentation() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Truyền thống */}
-            <div className="bg-white p-8 rounded-3xl border border-red-100 shadow-lg flex flex-col items-center text-center">
+            <div className="bg-white p-8 rounded-3xl border border-red-100 flex flex-col items-center text-center">
               <h3 className="text-xl font-bold text-red-500 mb-8 w-full border-b border-red-50 pb-4">Chatbot Truyền Thống (RAG)</h3>
               <div className="space-y-4 w-full px-4">
-                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl border border-gray-200">
                   <FiMessageSquare className="text-gray-500 mb-2" size={24} />
                   <p className="font-medium text-gray-700">"Bao giờ xe buýt tới?"</p>
                 </div>
                 <div className="flex justify-center text-gray-300 w-full"><FiArrowDown size={24} /></div>
-                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <div className="flex flex-col items-center p-4 bg-gray-50 rounded-2xl border border-gray-200">
                   <FiDatabase className="text-blue-400 mb-2" size={24} />
                   <p className="font-medium text-gray-600">Tìm kiếm Text trong Database tĩnh</p>
                 </div>
@@ -70,7 +70,7 @@ export default function Presentation() {
             </div>
 
             {/* ReAct */}
-            <div className="bg-white p-8 rounded-3xl border-2 border-emerald-400 shadow-2xl shadow-emerald-100 flex flex-col items-center text-center relative overflow-hidden">
+            <div className="bg-white p-8 rounded-3xl border-2 border-emerald-400 flex flex-col items-center text-center relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-bl-xl">GIẢI PHÁP</div>
               <h3 className="text-xl font-bold text-emerald-600 mb-8 w-full border-b border-emerald-50 pb-4">ReAct Agent VinBus</h3>
               <div className="space-y-4 w-full px-4">
@@ -104,8 +104,8 @@ export default function Presentation() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-blue-50 transition-colors border border-gray-100 flex gap-6">
-              <div className="bg-blue-500 text-white p-4 rounded-2xl shadow-sm h-fit">
+            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-blue-50 transition-colors border border-gray-200 flex gap-6">
+              <div className="bg-blue-500 text-white p-4 rounded-2xl h-fit">
                 <FiCpu size={28} />
               </div>
               <div>
@@ -114,8 +114,8 @@ export default function Presentation() {
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-emerald-50 transition-colors border border-gray-100 flex gap-6">
-              <div className="bg-emerald-500 text-white p-4 rounded-2xl shadow-sm h-fit">
+            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-emerald-50 transition-colors border border-gray-200 flex gap-6">
+              <div className="bg-emerald-500 text-white p-4 rounded-2xl h-fit">
                 <FiSettings size={28} />
               </div>
               <div>
@@ -124,8 +124,8 @@ export default function Presentation() {
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-orange-50 transition-colors border border-gray-100 flex gap-6">
-              <div className="bg-orange-500 text-white p-4 rounded-2xl shadow-sm h-fit">
+            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-orange-50 transition-colors border border-gray-200 flex gap-6">
+              <div className="bg-orange-500 text-white p-4 rounded-2xl h-fit">
                 <FiGitBranch size={28} />
               </div>
               <div>
@@ -134,8 +134,8 @@ export default function Presentation() {
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-purple-50 transition-colors border border-gray-100 flex gap-6">
-              <div className="bg-purple-500 text-white p-4 rounded-2xl shadow-sm h-fit">
+            <div className="p-8 rounded-3xl bg-gray-50 hover:bg-purple-50 transition-colors border border-gray-200 flex gap-6">
+              <div className="bg-purple-500 text-white p-4 rounded-2xl h-fit">
                 <FiTarget size={28} />
               </div>
               <div>
@@ -211,7 +211,7 @@ export default function Presentation() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
+            <div className="bg-white p-8 rounded-3xl border border-gray-200 border border-gray-200 hover:border-gray-300 transition-all group">
               <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <FiMapPin size={28} />
               </div>
@@ -219,7 +219,7 @@ export default function Presentation() {
               <p className="text-gray-500">Biến đổi tên địa danh thành Tọa độ địa lý (Lat, Lng) để hệ thống hiểu vị trí.</p>
             </div>
             
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
+            <div className="bg-white p-8 rounded-3xl border border-gray-200 border border-gray-200 hover:border-gray-300 transition-all group">
               <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <FiNavigation size={28} />
               </div>
@@ -227,7 +227,7 @@ export default function Presentation() {
               <p className="text-gray-500">Tìm kiếm các tuyến đường khả thi nối từ Điểm A đến Điểm B, bao gồm số trạm.</p>
             </div>
             
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
+            <div className="bg-white p-8 rounded-3xl border border-gray-200 border border-gray-200 hover:border-gray-300 transition-all group">
               <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <FiMap size={28} />
               </div>
@@ -235,7 +235,7 @@ export default function Presentation() {
               <p className="text-gray-500">Quét bán kính xung quanh vị trí hiện tại của User để liệt kê các trạm gần nhất.</p>
             </div>
             
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
+            <div className="bg-white p-8 rounded-3xl border border-gray-200 border border-gray-200 hover:border-gray-300 transition-all group">
               <div className="w-14 h-14 bg-gray-50 text-gray-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <FiInfo size={28} />
               </div>
@@ -243,14 +243,14 @@ export default function Presentation() {
               <p className="text-gray-500">Tra cứu thông tin tĩnh của một trạm cụ thể (Các tuyến xe chạy qua, giờ hoạt động).</p>
             </div>
             
-            <div className="bg-emerald-900 p-8 rounded-3xl shadow-xl shadow-emerald-200/50 transform md:col-span-2 lg:col-span-2 relative overflow-hidden text-white flex flex-col md:flex-row gap-8 items-center justify-between">
+            <div className="bg-emerald-900 p-8 rounded-3xl border border-emerald-800 transform md:col-span-2 lg:col-span-2 relative overflow-hidden text-white flex flex-col md:flex-row gap-8 items-center justify-between">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
               <div>
                 <div className="inline-block bg-emerald-800 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 border border-emerald-700">TÍNH NĂNG CỐT LÕI</div>
                 <h4 className="text-2xl font-bold mb-3 font-mono">5. get_eta (Real-time)</h4>
                 <p className="text-emerald-100/80 leading-relaxed max-w-lg">Lấy thời gian thực xe tới bến (Live ETA). Trả về chính xác Biển số xe, Khoảng cách (mét) và Số giây đếm ngược.</p>
               </div>
-              <div className="w-24 h-24 bg-emerald-800 text-emerald-400 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner">
+              <div className="w-24 h-24 bg-emerald-800 text-emerald-400 rounded-full flex items-center justify-center flex-shrink-0 ">
                 <FiClock size={40} />
               </div>
             </div>
@@ -263,7 +263,7 @@ export default function Presentation() {
         <h2 className="text-3xl font-bold text-gray-900 mb-8">Sẵn sàng để thử nghiệm?</h2>
         <button 
           onClick={() => navigate('/chat')}
-          className="inline-flex items-center gap-3 px-10 py-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold text-lg shadow-xl shadow-emerald-200 transition-all hover:scale-105"
+          className="inline-flex items-center gap-3 px-10 py-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold text-lg transition-all hover:bg-emerald-700"
         >
           <FiPlay size={20} /> Bắt đầu Demo Trực Tiếp
         </button>
