@@ -377,8 +377,19 @@ def execute_show_route_map(**kwargs) -> str:
     }, ensure_ascii=False)
 
 def execute_propose_trip_plan(**kwargs) -> str:
-    # Validate strictly!
-    required = ["region_code", "boarding_station_id", "station_lat", "station_lng", "route_no", "start_lat", "start_lng", "end_lat", "end_lng"]
+    # Auto-fill station coordinates if missing
+    if "station_lat" not in kwargs or "station_lng" not in kwargs or not kwargs["station_lat"]:
+        try:
+            station_info = vinbus_client.get_station_detail(kwargs.get("boarding_station_id"), kwargs.get("region_code", "hn"))
+            if station_info:
+                kwargs["station_lat"] = station_info.get("lat")
+                kwargs["station_lng"] = station_info.get("lng")
+                kwargs["station_name"] = station_info.get("stationName", kwargs.get("station_name"))
+        except Exception:
+            pass
+
+    # Validate strictly ONLY for user and destination coordinates
+    required = ["region_code", "boarding_station_id", "route_no", "start_lat", "start_lng", "end_lat", "end_lng"]
     missing = [k for k in required if k not in kwargs or kwargs[k] is None]
     
     if missing:

@@ -4,6 +4,21 @@ import { FiClock, FiCheck, FiBell, FiTrash2 } from 'react-icons/fi';
 // 1. Component hiển thị đề xuất trong Chat
 export function ProposedPlanCard({ regionCode, boardingStationId, stationName, stationLat, stationLng, routeNo, walkTimeMins, startLat, startLng, endLat, endLng }) {
   const [confirmed, setConfirmed] = useState(false);
+  const [fetchedStationLat, setFetchedStationLat] = useState(stationLat);
+  const [fetchedStationLng, setFetchedStationLng] = useState(stationLng);
+
+  useEffect(() => {
+    if (!fetchedStationLat && boardingStationId) {
+      fetch(`http://localhost:8000/api/station/${boardingStationId}?region_code=${regionCode || 'hn'}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "SUCCESS" && data.data) {
+            setFetchedStationLat(data.data.lat);
+            setFetchedStationLng(data.data.lng);
+          }
+        }).catch(e => console.error(e));
+    }
+  }, [boardingStationId, fetchedStationLat, regionCode]);
 
   const handleConfirm = async () => {
     // Xin quyền hiển thị thông báo trình duyệt
@@ -17,8 +32,8 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
         regionCode,
         boardingStationId,
         stationName: stationName || `Trạm ${boardingStationId}`,
-        stationLat,
-        stationLng,
+        stationLat: fetchedStationLat,
+        stationLng: fetchedStationLng,
         routeNo,
         walkTimeMins: walkTimeMins || 5,
         startLat,
@@ -45,7 +60,7 @@ export function ProposedPlanCard({ regionCode, boardingStationId, stationName, s
     }
   };
 
-  if (!startLat || !endLat || !stationLat) {
+  if (!startLat || !endLat || !fetchedStationLat) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-3 my-2 flex items-center gap-2">
         <span className="text-red-700 text-sm font-medium">⚠️ Agent bị lỗi khi tạo Kế hoạch (Thiếu toạ độ GPS). Đừng nhấn nút nào cả, hãy yêu cầu Agent thử lại.</span>
