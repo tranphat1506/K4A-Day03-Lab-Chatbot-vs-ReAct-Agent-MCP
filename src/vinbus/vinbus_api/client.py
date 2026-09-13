@@ -83,11 +83,13 @@ class VinbusClient:
     def get_directions(self, start_lat: float, start_lng: float, end_lat: float, end_lng: float, region_code: str) -> DirectionResponse:
         """Tìm lộ trình chỉ đường tối ưu (multimodal)."""
         params = {
-            "startLat": start_lat,
-            "startLng": start_lng,
-            "endLat": end_lat,
-            "endLng": end_lng,
-            "regionCode": region_code
+            "startPoint": f"{start_lat},{start_lng}",
+            "endPoint": f"{end_lat},{end_lng}",
+            "regionCode": region_code,
+            "maxWay": 4,
+            "maxRoute": 3,
+            "ignoreTime": 1,
+            "filterRouteType": 0
         }
         return self._request("/client/navigation", method="POST", json_data=params)
 
