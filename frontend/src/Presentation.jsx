@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   FiChevronLeft, FiChevronRight, FiPlay, FiMonitor, 
   FiMapPin, FiNavigation, FiMap, FiInfo, FiClock, FiSettings,
-  FiMessageSquare, FiDatabase, FiAlertTriangle, FiCheckCircle,
+  FiMessageSquare, FiDatabase, FiAlertTriangle, FiCheckCircle, FiArrowDown, FiArrowRight,
   FiCpu, FiGitBranch, FiTarget, FiBox, FiServer, FiGlobe
 } from 'react-icons/fi';
 
@@ -38,12 +38,12 @@ const SLIDES = [
                 <FiMessageSquare className="text-gray-500 mb-2" size={24} />
                 <p className="font-medium">User: "Bao giờ xe buýt tới?"</p>
               </div>
-              <div className="text-gray-400">⬇️</div>
+              <div className="text-gray-400 my-2"><FiArrowDown size={24} /></div>
               <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <FiDatabase className="text-blue-500 mb-2" size={24} />
                 <p className="font-medium">Tìm kiếm trong Database tĩnh (PDF, Text)</p>
               </div>
-              <div className="text-gray-400">⬇️</div>
+              <div className="text-gray-400 my-2"><FiArrowDown size={24} /></div>
               <div className="flex flex-col items-center p-4 bg-red-50 rounded-lg border border-red-200">
                 <FiAlertTriangle className="text-red-500 mb-2" size={24} />
                 <p className="font-bold text-red-700">Thất bại / Hallucination</p>
@@ -60,12 +60,12 @@ const SLIDES = [
                 <FiMessageSquare className="text-emerald-600 mb-2" size={24} />
                 <p className="font-medium text-emerald-800">User: "Bao giờ xe buýt tới?"</p>
               </div>
-              <div className="text-emerald-400 font-bold">⬇️ Phân tích Yêu cầu</div>
+              <div className="flex flex-col items-center text-emerald-400 font-bold my-2"><FiArrowDown size={24} /> <span className="text-sm mt-1">Phân tích Yêu cầu</span></div>
               <div className="flex flex-col items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <FiSettings className="text-blue-500 mb-2 animate-spin-slow" size={24} />
                 <p className="font-medium text-blue-800">Kích hoạt Tool `get_eta()` lấy Live Data</p>
               </div>
-              <div className="text-emerald-400 font-bold">⬇️ Trả về JSON Real-time</div>
+              <div className="flex flex-col items-center text-emerald-400 font-bold my-2"><FiArrowDown size={24} /> <span className="text-sm mt-1">Trả về JSON Real-time</span></div>
               <div className="flex flex-col items-center p-4 bg-emerald-100 rounded-lg border border-emerald-300">
                 <FiCheckCircle className="text-emerald-600 mb-2" size={24} />
                 <p className="font-bold text-emerald-900">Trả lời chính xác!</p>
@@ -143,8 +143,8 @@ const SLIDES = [
             <p className="text-sm text-gray-500 text-center mt-2">Vite + React<br/>Tính năng Auto GPS</p>
           </div>
 
-          <div className="text-gray-400 font-bold hidden md:block">➔ REST API ➔</div>
-          <div className="text-gray-400 font-bold md:hidden">⬇️</div>
+          <div className="text-gray-400 font-bold hidden md:flex flex-col items-center"><FiArrowRight size={24} /><span className="text-xs">REST API</span></div>
+          <div className="text-gray-400 font-bold md:hidden my-2"><FiArrowDown size={24} /></div>
 
           {/* Lớp Backend */}
           <div className="flex flex-col items-center bg-blue-50 p-6 rounded-xl border border-blue-200 w-full md:w-1/4 relative">
@@ -154,8 +154,8 @@ const SLIDES = [
             <p className="text-sm text-blue-700 text-center mt-2">LLM (Gemini/OpenAI)<br/>Lập kế hoạch (Thought)</p>
           </div>
 
-          <div className="text-blue-400 font-bold hidden md:block">➔ Gọi Tools ➔</div>
-          <div className="text-blue-400 font-bold md:hidden">⬇️</div>
+          <div className="text-blue-400 font-bold hidden md:flex flex-col items-center"><FiArrowRight size={24} /><span className="text-xs">Gọi Tools</span></div>
+          <div className="text-blue-400 font-bold md:hidden my-2"><FiArrowDown size={24} /></div>
 
           {/* Lớp MCP Server */}
           <div className="flex flex-col items-center bg-emerald-50 p-6 rounded-xl border border-emerald-200 w-full md:w-1/4 relative">
@@ -165,8 +165,8 @@ const SLIDES = [
             <p className="text-sm text-emerald-700 text-center mt-2">Đăng ký & Cung cấp<br/>5 Công cụ (Tools)</p>
           </div>
 
-          <div className="text-emerald-400 font-bold hidden md:block">➔ HTTP GET ➔</div>
-          <div className="text-emerald-400 font-bold md:hidden">⬇️</div>
+          <div className="text-emerald-400 font-bold hidden md:flex flex-col items-center"><FiArrowRight size={24} /><span className="text-xs">HTTP GET</span></div>
+          <div className="text-emerald-400 font-bold md:hidden my-2"><FiArrowDown size={24} /></div>
 
           {/* Lớp Database Thực Tế */}
           <div className="flex flex-col items-center bg-red-50 p-6 rounded-xl border border-red-200 w-full md:w-1/4 relative">
