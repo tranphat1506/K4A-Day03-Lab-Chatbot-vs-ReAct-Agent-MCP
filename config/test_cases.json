@@ -1,0 +1,37 @@
+[
+  {
+    "id": "TC01",
+    "type": "direct_query",
+    "question": "Chào bạn, bạn có thể giới thiệu sơ qua về mạng lưới VinBus ở Hà Nội không?",
+    "expected_behavior": "Chatbot trả lời trực tiếp từ System Prompt, không cần gọi bất kỳ Tool nào.",
+    "complexity": "Low"
+  },
+  {
+    "id": "TC02",
+    "type": "single_tool_query",
+    "question": "Tôi muốn biết các tuyến xe bus chạy qua trạm VinUni (ID: 1234).",
+    "expected_behavior": "Agent gọi Tool 'get_station_detail' hoặc 'get_eta' với ID trạm để lấy danh sách tuyến xe.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC03",
+    "type": "appointment_booking",
+    "question": "Tôi đang đứng ở S2.05, muốn đến Đại học VinUni. Hãy tìm trạm đón và tính giờ xe đến giúp tôi (Khu vực HN).",
+    "expected_behavior": "Agent gọi Tool geocoding để tìm tọa độ S2.05, tìm trạm gần nhất, và gọi Tool get_eta để kiểm tra xe.",
+    "complexity": "Medium"
+  },
+  {
+    "id": "TC04",
+    "type": "multi_step_reasoning",
+    "question": "Sắp tới 8h30 sáng tôi phải có mặt ở VinUni. Tôi đang ở ngã tư Sở. Tôi nên đi tuyến nào và bao giờ phải ra bến?",
+    "expected_behavior": "Agent thực hiện chuỗi ReAct: Geocode ngã tư Sở -> Tìm trạm đi -> Geocode VinUni -> Tìm trạm đến -> Tìm tuyến phù hợp -> Tính ETA và thời gian đi bộ.",
+    "complexity": "High"
+  },
+  {
+    "id": "TC05",
+    "type": "edge_case_handling",
+    "question": "Cho tôi hỏi giờ xe bus VinBus chạy ở trạm số 999999 (trạm không tồn tại).",
+    "expected_behavior": "Agent nhận kết quả lỗi/trống từ Tool, đưa ra phản hồi lịch sự không bịa đặt dữ liệu ETA.",
+    "complexity": "Medium"
+  }
+]

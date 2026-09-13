@@ -1,111 +1,129 @@
 """
 🛠️ TOOL DEFINITIONS & EXECUTION BACKEND
 Mã nguồn chứa danh sách Tool Schemas (JSON Schema) và Execution Layer phục vụ cho MCP Server.
+Đã được cấu hình lại để sử dụng VinBus API.
 """
 
 import json
 from typing import Dict, Any
+
+from vinbus.vinbus_api.client import VinbusClient
+
+# Khởi tạo client dùng chung
+vinbus_client = VinbusClient(timeout=10)
 
 # ==============================================================================
 # 1. KHAI BÁO TOOL SCHEMAS CHUẨN NATIVE JSON SCHEMA (TASK 1.2)
 # ==============================================================================
 
 TOOLS_SCHEMA = [
-    # Tool 1: Đã được định nghĩa mẫu sẵn cho Học viên tham khảo
     {
-        "name": "academic_query",
-        "description": "Tra cứu hồ sơ và thông tin học vụ của sinh viên VinUni bằng mã sinh viên.",
+        "name": "geocoding_search",
+        "description": "Tìm kiếm toạ độ GPS của một địa chỉ hoặc địa điểm.",
         "parameters": {
             "type": "object",
             "properties": {
-                "student_id": {
+                "region_code": {
                     "type": "string",
-                    "description": "Mã sinh viên cần tra cứu (ví dụ: 'SV2026001')"
+                    "description": "Mã khu vực (ví dụ: 'hn' cho Hà Nội, 'hcm' cho Hồ Chí Minh)"
+                },
+                "content": {
+                    "type": "string",
+                    "description": "Tên địa điểm hoặc địa chỉ cần tìm (ví dụ: 'Ngã tư Sở', 'S2.05')"
                 }
             },
-            "required": ["student_id"]
+            "required": ["region_code", "content"]
         }
     },
-    
-    # --------------------------------------------------------------------------
-    # TODO 1.2: HỌC VIÊN HOÀN THIỆN TOOL SCHEMA CHO 'schedule_appointment'
-    # 🎯 YÊU CẦU THIẾT KẾ SCHEMA (JSON SCHEMA STANDARD):
-    # 1. Tool dùng để đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.
-    # 2. Thiết kế các tham số (properties) để LLM trích xuất:
-    #    - student_id (string): Mã sinh viên cần đặt lịch (ví dụ: 'SV2026001')
-    #    - datetime_str (string): Thời gian hẹn (ví dụ: '14:00 15/09/2026')
-    #    - advisor_name (string): Tên cố vấn học tập
-    # 3. Khai báo danh sách các trường bắt buộc (required).
-    # --------------------------------------------------------------------------
     {
-        "name": "schedule_appointment",
-        "description": "Đặt lịch hẹn tư vấn học vụ với Cố vấn học tập VinUni.",
+        "name": "get_station_detail",
+        "description": "Lấy thông tin chi tiết của một trạm xe buýt và các tuyến xe đi qua trạm đó.",
         "parameters": {
             "type": "object",
             "properties": {
-                # TODO 1.2: Khai báo các thuộc tính tham số cho Tool tại đây...
+                "station_id": {
+                    "type": "integer",
+                    "description": "ID của trạm xe buýt (ví dụ: 1234)"
+                },
+                "region_code": {
+                    "type": "string",
+                    "description": "Mã khu vực (ví dụ: 'hn')"
+                }
             },
-            "required": [] # TODO 1.2: Khai báo danh sách các trường bắt buộc tại đây...
+            "required": ["station_id", "region_code"]
+        }
+    },
+    {
+        "name": "get_eta",
+        "description": "Lấy thời gian dự kiến (ETA) của các xe buýt sắp tới một trạm xe cụ thể.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "region_code": {
+                    "type": "string",
+                    "description": "Mã khu vực (ví dụ: 'hn')"
+                },
+                "station_id": {
+                    "type": "integer",
+                    "description": "ID của trạm xe buýt (ví dụ: 1234)"
+                }
+            },
+            "required": ["region_code", "station_id"]
         }
     }
 ]
 
 # ==============================================================================
-# 2. MÔ PHỎNG DỮ LIỆU & HÀM THỰC THI TOOL (EXECUTION LAYER)
+# 2. HÀM THỰC THI TOOL (EXECUTION LAYER) GỌI VINBUS API
 # ==============================================================================
 
-MOCK_DATABASE = {
-    "SV2026001": {
-        "full_name": "Nguyễn Văn An",
-        "class": "AI-K4",
-        "gpa": 3.85,
-        "email": "an.nv@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "PGS.TS Nguyễn Văn A"
-    },
-    "SV2026002": {
-        "full_name": "Trần Thị Bình",
-        "class": "AI-K4",
-        "gpa": 3.60,
-        "email": "binh.tt@vinuni.edu.vn",
-        "status": "Đang học",
-        "advisor": "TS. Lê Thị B"
-    }
-}
-
-
-def execute_academic_query(student_id: str) -> str:
-    """Thực thi tra cứu học vụ theo mã sinh viên"""
-    student = MOCK_DATABASE.get(student_id.strip().upper())
-    if student:
+def execute_geocoding_search(region_code: str, content: str) -> str:
+    """Thực thi tìm kiếm tọa độ từ địa chỉ"""
+    try:
+        result = vinbus_client.geocoding_search(region_code, content)
         return json.dumps({
             "status": "SUCCESS",
-            "student_id": student_id,
-            "data": student
+            "data": result
         }, ensure_ascii=False)
-    else:
+    except Exception as e:
         return json.dumps({
-            "status": "NOT_FOUND",
-            "message": f"Không tìm thấy dữ liệu sinh viên có mã '{student_id}'"
+            "status": "ERROR",
+            "message": str(e)
         }, ensure_ascii=False)
 
+def execute_get_station_detail(station_id: int, region_code: str) -> str:
+    """Thực thi lấy chi tiết trạm xe buýt"""
+    try:
+        result = vinbus_client.get_station_detail(station_id, region_code)
+        return json.dumps({
+            "status": "SUCCESS",
+            "data": result
+        }, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({
+            "status": "ERROR",
+            "message": str(e)
+        }, ensure_ascii=False)
 
-def execute_schedule_appointment(student_id: str, datetime_str: str, advisor_name: str = "PGS.TS Nguyễn Văn A") -> str:
-    """Thực thi đặt lịch hẹn tư vấn học vụ"""
-    return json.dumps({
-        "status": "SUCCESS",
-        "booking_id": f"BK-{student_id}-99",
-        "student_id": student_id,
-        "datetime": datetime_str,
-        "advisor": advisor_name,
-        "message": f"Đặt lịch thành công cho sinh viên {student_id} với {advisor_name} vào lúc {datetime_str}."
-    }, ensure_ascii=False)
-
+def execute_get_eta(region_code: str, station_id: int) -> str:
+    """Thực thi lấy thời gian xe đến bến realtime"""
+    try:
+        result = vinbus_client.get_eta(region_code, station_id)
+        return json.dumps({
+            "status": "SUCCESS",
+            "data": result
+        }, ensure_ascii=False)
+    except Exception as e:
+        return json.dumps({
+            "status": "ERROR",
+            "message": str(e)
+        }, ensure_ascii=False)
 
 # Router gọi tool thực tế
 TOOL_ROUTER = {
-    "academic_query": execute_academic_query,
-    "schedule_appointment": execute_schedule_appointment
+    "geocoding_search": execute_geocoding_search,
+    "get_station_detail": execute_get_station_detail,
+    "get_eta": execute_get_eta
 }
 
 def dispatch_tool_call(tool_name: str, arguments: Dict[str, Any]) -> str:
