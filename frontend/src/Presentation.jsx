@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Mermaid from './Mermaid';
 import { 
   FiChevronLeft, FiChevronRight, FiPlay, FiMonitor, 
-  FiMapPin, FiNavigation, FiMap, FiInfo, FiClock, FiSettings 
+  FiMapPin, FiNavigation, FiMap, FiInfo, FiClock, FiSettings,
+  FiMessageSquare, FiDatabase, FiAlertTriangle, FiCheckCircle,
+  FiCpu, FiGitBranch, FiTarget, FiBox, FiServer, FiGlobe
 } from 'react-icons/fi';
 
 const SLIDES = [
@@ -24,87 +25,161 @@ const SLIDES = [
     )
   },
   {
-    title: "1. Đề tài & Lý do lựa chọn (Chatbot vs ReAct Agent)",
-    chartId: "slide1",
-    chart: `flowchart TD
-    subgraph Traditional["Chatbot Truyền Thống (RAG/Prompt)"]
-        A1[Người dùng hỏi: Bao giờ xe buýt tới?] --> B1[LLM tìm trong Database tĩnh]
-        B1 --> C1[Không có dữ liệu thời gian thực]
-        C1 --> D1[Trả lời thất bại / Hallucination]
-    end
-    
-    subgraph ReAct["Trợ lý Thông minh VinBus (ReAct Agent)"]
-        A2[Người dùng hỏi: Bao giờ xe buýt tới?] --> B2[LLM nhận diện Yêu cầu]
-        B2 --> C2[LLM kích hoạt Tool get_eta]
-        C2 --> D2[Lấy Live Data từ hệ thống VinBus API]
-        D2 --> E2[Trả lời chính xác: Xe sắp tới trong 3 phút]
-    end
-    
-    Traditional ~~~ ReAct
-    
-    style C1 fill:#fca5a5,stroke:#b91c1c
-    style D1 fill:#f87171,stroke:#991b1b,color:white
-    style C2 fill:#a7f3d0,stroke:#047857
-    style D2 fill:#34d399,stroke:#065f46
-    style E2 fill:#10b981,stroke:#064e3b,color:white`
+    title: "1. Đề tài & Lý do lựa chọn: Tại sao không dùng Chatbot thường?",
+    content: (
+      <div className="w-full h-full max-w-6xl mx-auto flex flex-col justify-center animate-fade-in-up">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          
+          {/* Cột Trái: Chatbot Truyền thống */}
+          <div className="bg-white p-8 rounded-2xl border border-red-200 shadow-md flex flex-col items-center text-center">
+            <h3 className="text-2xl font-bold text-red-600 mb-6 border-b border-red-100 pb-4 w-full">Chatbot Truyền Thống (RAG/Prompt)</h3>
+            <div className="space-y-6 w-full">
+              <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <FiMessageSquare className="text-gray-500 mb-2" size={24} />
+                <p className="font-medium">User: "Bao giờ xe buýt tới?"</p>
+              </div>
+              <div className="text-gray-400">⬇️</div>
+              <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <FiDatabase className="text-blue-500 mb-2" size={24} />
+                <p className="font-medium">Tìm kiếm trong Database tĩnh (PDF, Text)</p>
+              </div>
+              <div className="text-gray-400">⬇️</div>
+              <div className="flex flex-col items-center p-4 bg-red-50 rounded-lg border border-red-200">
+                <FiAlertTriangle className="text-red-500 mb-2" size={24} />
+                <p className="font-bold text-red-700">Thất bại / Hallucination</p>
+                <p className="text-sm text-red-600 mt-1">Không có dữ liệu thời gian thực</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Cột Phải: ReAct Agent */}
+          <div className="bg-white p-8 rounded-2xl border-2 border-emerald-400 shadow-xl flex flex-col items-center text-center transform hover:scale-105 transition-transform">
+            <h3 className="text-2xl font-bold text-emerald-600 mb-6 border-b border-emerald-100 pb-4 w-full">Trợ lý Thông minh (ReAct Agent)</h3>
+            <div className="space-y-6 w-full">
+              <div className="flex flex-col items-center p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                <FiMessageSquare className="text-emerald-600 mb-2" size={24} />
+                <p className="font-medium text-emerald-800">User: "Bao giờ xe buýt tới?"</p>
+              </div>
+              <div className="text-emerald-400 font-bold">⬇️ Phân tích Yêu cầu</div>
+              <div className="flex flex-col items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <FiSettings className="text-blue-500 mb-2 animate-spin-slow" size={24} />
+                <p className="font-medium text-blue-800">Kích hoạt Tool `get_eta()` lấy Live Data</p>
+              </div>
+              <div className="text-emerald-400 font-bold">⬇️ Trả về JSON Real-time</div>
+              <div className="flex flex-col items-center p-4 bg-emerald-100 rounded-lg border border-emerald-300">
+                <FiCheckCircle className="text-emerald-600 mb-2" size={24} />
+                <p className="font-bold text-emerald-900">Trả lời chính xác!</p>
+                <p className="text-sm text-emerald-700 mt-1">"Xe biển số X sắp tới trong 3 phút nữa"</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    )
   },
   {
-    title: "2. Tại sao ReAct Agent phù hợp? (4 Tiêu chí Agent Fit)",
-    chartId: "slide2",
-    chart: `flowchart LR
-    Center((Tại sao<br/>ReAct Agent<br/>Phù hợp?))
-    
-    Center --- A[1. Suy luận đa bước<br/>Multi-step Reasoning]
-    A --- A1(Tìm Tọa độ ➔ Tuyến ➔ Trạm ➔ Giờ xe tới)
-    
-    Center --- B[2. Tương tác Công cụ<br/>Tool Interaction]
-    B --- B1(Giao tiếp trực tiếp hệ thống API VinBus)
-    
-    Center --- C[3. Quyết định Động<br/>Dynamic Decision]
-    C --- C1(Tự thay đổi lộ trình đề xuất nếu xe quá lâu)
-    
-    Center --- D[4. Mục tiêu dài hạn<br/>Long Horizon]
-    D --- D1(Lưu bối cảnh, hỗ trợ đến khi khách lên xe)
-    
-    style Center fill:#3b82f6,color:#fff,stroke:#1e3a8a,stroke-width:3px
-    style A fill:#e0f2fe,stroke:#0284c7,stroke-width:2px
-    style B fill:#dcfce3,stroke:#16a34a,stroke-width:2px
-    style C fill:#fef3c7,stroke:#d97706,stroke-width:2px
-    style D fill:#f3e8ff,stroke:#9333ea,stroke-width:2px`
+    title: "2. Tại sao Pattern ReAct Agent lại phù hợp? (4 Tiêu chí)",
+    content: (
+      <div className="w-full h-full max-w-6xl mx-auto flex flex-col justify-center animate-fade-in-up">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <div className="bg-blue-50 p-8 rounded-2xl border border-blue-200 flex items-start gap-6">
+            <div className="bg-blue-500 text-white p-4 rounded-xl shadow-md">
+              <FiCpu size={32} />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-blue-900 mb-2">1. Suy luận đa bước (Reasoning)</h3>
+              <p className="text-blue-700">Thay vì trả lời ngay, Agent tự chia nhỏ vấn đề: Tìm Tọa độ ➔ Tuyến đường ➔ Trạm gần nhất ➔ Giờ xe tới.</p>
+            </div>
+          </div>
+
+          <div className="bg-emerald-50 p-8 rounded-2xl border border-emerald-200 flex items-start gap-6">
+            <div className="bg-emerald-500 text-white p-4 rounded-xl shadow-md">
+              <FiSettings size={32} />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-emerald-900 mb-2">2. Tương tác Công cụ (Acting)</h3>
+              <p className="text-emerald-700">Agent có khả năng trực tiếp gọi các API của VinBus (thông qua MCP Server) để lấy dữ liệu thực tế (Live Data).</p>
+            </div>
+          </div>
+
+          <div className="bg-orange-50 p-8 rounded-2xl border border-orange-200 flex items-start gap-6">
+            <div className="bg-orange-500 text-white p-4 rounded-xl shadow-md">
+              <FiGitBranch size={32} />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-orange-900 mb-2">3. Quyết định Động (Dynamic Decision)</h3>
+              <p className="text-orange-700">Dựa vào dữ liệu API trả về, Agent tự rẽ nhánh logic. Ví dụ: Nếu xe còn 30s, giục khách chạy ra; Nếu còn 20 phút, khuyên khách đi ăn sáng.</p>
+            </div>
+          </div>
+
+          <div className="bg-purple-50 p-8 rounded-2xl border border-purple-200 flex items-start gap-6">
+            <div className="bg-purple-500 text-white p-4 rounded-xl shadow-md">
+              <FiTarget size={32} />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-purple-900 mb-2">4. Mục tiêu dài hạn (Long Horizon)</h3>
+              <p className="text-purple-700">Hệ thống duy trì Chat History liên tục, đồng hành và hỗ trợ hành khách từ lúc đứng ở nhà cho đến khi bước lên đúng chiếc xe buýt.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    )
   },
   {
-    title: "3. Kiến trúc Hệ thống & Luồng thực thi Agent",
-    chartId: "slide3",
-    chart: `flowchart TD
-    subgraph Frontend["Client UI (Vite + React)"]
-        UI[Giao diện Client]
-        GPS[Hệ thống bắt GPS tự động]
-    end
+    title: "3. Kiến trúc Hệ thống & Luồng thực thi",
+    content: (
+      <div className="w-full h-full max-w-6xl mx-auto flex flex-col justify-center animate-fade-in-up">
+        
+        {/* Sơ đồ kiến trúc tự thiết kế bằng CSS Grid & Flex */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+          
+          {/* Lớp Frontend */}
+          <div className="flex flex-col items-center bg-gray-50 p-6 rounded-xl border border-gray-200 w-full md:w-1/4">
+            <FiMonitor className="text-gray-600 mb-3" size={32} />
+            <h4 className="font-bold text-gray-800">1. Client UI</h4>
+            <p className="text-sm text-gray-500 text-center mt-2">Vite + React<br/>Tính năng Auto GPS</p>
+          </div>
 
-    subgraph Backend["Backend (FastAPI)"]
-        API[REST API Endpoint]
-        LLM{Bộ não ReAct Agent <br/> Gemini / OpenAI}
-    end
+          <div className="text-gray-400 font-bold hidden md:block">➔ REST API ➔</div>
+          <div className="text-gray-400 font-bold md:hidden">⬇️</div>
 
-    subgraph MCP["Model Context Protocol"]
-        Server[VinBus MCP Server]
-        Tools[Tập lệnh 5 VinBus Tools]
-    end
+          {/* Lớp Backend */}
+          <div className="flex flex-col items-center bg-blue-50 p-6 rounded-xl border border-blue-200 w-full md:w-1/4 relative">
+            <div className="absolute -top-3 bg-blue-500 text-white text-xs px-2 py-1 rounded">FastAPI</div>
+            <FiCpu className="text-blue-600 mb-3" size={32} />
+            <h4 className="font-bold text-blue-900">2. ReAct Agent</h4>
+            <p className="text-sm text-blue-700 text-center mt-2">LLM (Gemini/OpenAI)<br/>Lập kế hoạch (Thought)</p>
+          </div>
 
-    subgraph External["Dữ liệu thực tế"]
-        VinBus[(Cơ sở dữ liệu VinBus API)]
-    end
+          <div className="text-blue-400 font-bold hidden md:block">➔ Gọi Tools ➔</div>
+          <div className="text-blue-400 font-bold md:hidden">⬇️</div>
 
-    UI <-->|JSON/HTTP| API
-    GPS -->|Bơm tọa độ ẩn| API
-    API <--> LLM
-    LLM <-->|Thought & Action| Server
-    Server --> Tools
-    Tools <-->|Live API Fetch| VinBus
-    
-    style LLM fill:#8b5cf6,color:white,stroke:#5b21b6
-    style Server fill:#f59e0b,color:white,stroke:#b45309
-    style VinBus fill:#ef4444,color:white,stroke:#b91c1c`
+          {/* Lớp MCP Server */}
+          <div className="flex flex-col items-center bg-emerald-50 p-6 rounded-xl border border-emerald-200 w-full md:w-1/4 relative">
+            <div className="absolute -top-3 bg-emerald-500 text-white text-xs px-2 py-1 rounded">Python MCP</div>
+            <FiBox className="text-emerald-600 mb-3" size={32} />
+            <h4 className="font-bold text-emerald-900">3. MCP Server</h4>
+            <p className="text-sm text-emerald-700 text-center mt-2">Đăng ký & Cung cấp<br/>5 Công cụ (Tools)</p>
+          </div>
+
+          <div className="text-emerald-400 font-bold hidden md:block">➔ HTTP GET ➔</div>
+          <div className="text-emerald-400 font-bold md:hidden">⬇️</div>
+
+          {/* Lớp Database Thực Tế */}
+          <div className="flex flex-col items-center bg-red-50 p-6 rounded-xl border border-red-200 w-full md:w-1/4 relative">
+            <div className="absolute -top-3 bg-red-500 text-white text-xs px-2 py-1 rounded">Live Data</div>
+            <FiGlobe className="text-red-600 mb-3" size={32} />
+            <h4 className="font-bold text-red-900">4. VinBus API</h4>
+            <p className="text-sm text-red-700 text-center mt-2">Dữ liệu thời gian thực<br/>(Tọa độ, Lộ trình, ETA)</p>
+          </div>
+
+        </div>
+
+      </div>
+    )
   },
   {
     title: "4. Bộ 5 Công Cụ (Tools) Giao Tiếp Hệ Thống",
@@ -208,14 +283,8 @@ export default function Presentation() {
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 overflow-hidden p-10 flex items-center justify-center bg-white relative">
-        {slide.content ? (
-          slide.content
-        ) : (
-          <div className="w-full h-full flex items-center justify-center transform scale-125 transition-transform">
-            <Mermaid id={slide.chartId} chart={slide.chart} />
-          </div>
-        )}
+      <div className="flex-1 overflow-hidden p-10 flex items-center justify-center bg-gray-50 relative">
+        {slide.content}
       </div>
 
       {/* FOOTER CONTROLS */}
