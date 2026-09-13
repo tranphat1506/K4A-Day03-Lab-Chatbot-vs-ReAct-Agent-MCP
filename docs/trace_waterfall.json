@@ -1,10 +1,160 @@
 [
   {
     "step": 1,
-    "query": "Bây giờ tôi muốn về nhà của mình",
-    "action_type": "FINAL_ANSWER",
-    "thought": "Câu hỏi chung chung, trả lời trực tiếp.",
-    "output": "[Mock VinBus Agent]: Chào bạn! Hệ thống xe buýt điện VinBus (Mock) hiện tại đang chạy mượt mà. Vui lòng cung cấp mã trạm hoặc tên địa điểm để tôi tra cứu nhé.",
-    "latency_ms": 972.84
+    "query": "Bây giờ tôi muốn về nhà ngay bây giờ Nhà tôi ở Phố Biển 19",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "geocoding_search",
+    "arguments": {
+      "region_code": "hn",
+      "content": "Ngã tư Sở"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "data": [
+        {
+          "title": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "lat": 21.001498,
+          "lng": 105.8267372
+        },
+        {
+          "title": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "lat": 21.00297715,
+          "lng": 105.82024058421104
+        }
+      ]
+    },
+    "latency_ms": 1105.8
+  },
+  {
+    "step": 2,
+    "query": "Bây giờ tôi muốn về nhà ngay bây giờ Nhà tôi ở Phố Biển 19\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "geocoding_search",
+    "arguments": {
+      "region_code": "hn",
+      "content": "Ngã tư Sở"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "data": [
+        {
+          "title": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "lat": 21.001498,
+          "lng": 105.8267372
+        },
+        {
+          "title": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "lat": 21.00297715,
+          "lng": 105.82024058421104
+        }
+      ]
+    },
+    "latency_ms": 767.01
+  },
+  {
+    "step": 3,
+    "query": "Bây giờ tôi muốn về nhà ngay bây giờ Nhà tôi ở Phố Biển 19\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "geocoding_search",
+    "arguments": {
+      "region_code": "hn",
+      "content": "Ngã tư Sở"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "data": [
+        {
+          "title": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "lat": 21.001498,
+          "lng": 105.8267372
+        },
+        {
+          "title": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "lat": 21.00297715,
+          "lng": 105.82024058421104
+        }
+      ]
+    },
+    "latency_ms": 996.73
+  },
+  {
+    "step": 4,
+    "query": "Bây giờ tôi muốn về nhà ngay bây giờ Nhà tôi ở Phố Biển 19\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "geocoding_search",
+    "arguments": {
+      "region_code": "hn",
+      "content": "Ngã tư Sở"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "data": [
+        {
+          "title": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam",
+          "lat": 21.001498,
+          "lng": 105.8267372
+        },
+        {
+          "title": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "address": "Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam",
+          "lat": 21.00297715,
+          "lng": 105.82024058421104
+        }
+      ]
+    },
+    "latency_ms": 817.1
+  },
+  {
+    "step": 5,
+    "query": "Bây giờ tôi muốn về nhà ngay bây giờ Nhà tôi ở Phố Biển 19\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.\n\n[System]: Bạn vừa gọi tool 'geocoding_search' và nhận được kết quả sau: {\"status\": \"SUCCESS\", \"data\": [{\"title\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã Tư Sở, Đường Vành đai 2, Khương Thượng, Phường Kim Liên, Quận Đống Đa, Hà Nội, 11415, Việt Nam\", \"lat\": 21.001498, \"lng\": 105.8267372}, {\"title\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"address\": \"Ngã tư Sở, Hầm đường bộ Ngã Tư Sở, Khương Trung, Phường Đống Đa, Phường Khương Đình, Hà Nội, 11415, Việt Nam\", \"lat\": 21.00297715, \"lng\": 105.82024058421104}]}\nHãy phân tích kết quả này. Nếu đã đủ thông tin, hãy trả lời người dùng. Nếu chưa, hãy gọi tool tiếp theo.",
+    "action_type": "TOOL_EXECUTION",
+    "tool_name": "geocoding_search",
+    "arguments": {
+      "region_code": "hn",
+      "content": "Phố Biển 19"
+    },
+    "observation": {
+      "status": "SUCCESS",
+      "data": [
+        {
+          "title": "[Trạm] Phố Biển 19 - Lối vào Quảng Trường The Venice",
+          "address": "Phố Biển 19 - Lối vào Quảng Trường The Venice",
+          "lat": 20.95610317,
+          "lng": 105.9795848
+        },
+        {
+          "title": "[Trạm] Phố biển 19_GW1",
+          "address": "Phố biển 19_GW1",
+          "lat": 20.988672,
+          "lng": 105.942653
+        },
+        {
+          "title": "[Trạm] Phân khu Phố Biển – Đường Phố biển 19",
+          "address": "Phân khu Phố Biển – Đường Phố biển 19",
+          "lat": 20.9563,
+          "lng": 105.97981
+        },
+        {
+          "title": "Phố Biển 19, Vinhomes Ocean Park 3, Nghĩa Trụ, Tỉnh Hưng Yên, Việt Nam",
+          "address": "Phố Biển 19, Vinhomes Ocean Park 3, Nghĩa Trụ, Tỉnh Hưng Yên, Việt Nam",
+          "lat": 20.9566542,
+          "lng": 105.9808431
+        },
+        {
+          "title": "Phố Biển 19, Vinhomes Ocean Park 3, Như Quỳnh, Tỉnh Hưng Yên, Việt Nam",
+          "address": "Phố Biển 19, Vinhomes Ocean Park 3, Như Quỳnh, Tỉnh Hưng Yên, Việt Nam",
+          "lat": 20.9576097,
+          "lng": 105.9830883
+        }
+      ]
+    },
+    "latency_ms": 1449.57
   }
 ]
